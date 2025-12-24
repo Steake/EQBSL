@@ -1,0 +1,5 @@
+{
+  "name": "EQBSL Explorer",
+  "description": "Interactive playground for Evidence-Based Subjective Logic, ZK-EBSL, and EQBSL trust systems.",
+  "requestFramePermissions": []
+}
