@@ -1,4 +1,4 @@
-import { Component, input, output, computed, ChangeDetectionStrategy, signal, effect, afterNextRender } from '@angular/core';
+import { Component, input, output, computed, ChangeDetectionStrategy, effect, ElementRef, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 interface PaperContent {
@@ -171,6 +171,7 @@ interface Section {
 export class PaperDetailComponent {
   paperId = input.required<string>();
   back = output<void>();
+  contentContainer = viewChild<ElementRef>('contentContainer');
   
   private paperDatabase: Record<string, PaperContent> = {
     'ebsl-zk': {
@@ -679,18 +680,25 @@ export class PaperDetailComponent {
   });
 
   constructor() {
-    // Render LaTeX math after content is loaded
-    afterNextRender(() => {
-      this.renderMath();
+    // Re-render math whenever the paper changes
+    effect(() => {
+      const currentPaper = this.paper();
+      if (currentPaper) {
+        // Use setTimeout to ensure DOM is updated
+        setTimeout(() => this.renderMath(), 0);
+      }
     });
   }
 
   private renderMath(): void {
+    const containerRef = this.contentContainer();
+    if (!containerRef) return;
+    
+    const container = containerRef.nativeElement;
+    if (!container) return;
+    
     // Import KaTeX dynamically
     import('katex').then((katex) => {
-      const container = document.querySelector('.prose');
-      if (!container) return;
-
       // Find all math expressions in the content
       const walker = document.createTreeWalker(
         container,
