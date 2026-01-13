@@ -5,6 +5,7 @@ import { EbslPlaygroundComponent } from './components/ebsl-playground.component'
 import { EqbslGraphComponent } from './components/eqbsl-graph.component';
 import { ZkDemoComponent } from './components/zk-demo.component';
 import { CathexisComponent } from './components/cathexis.component';
+import { DocsComponent } from './components/docs.component';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +16,8 @@ import { CathexisComponent } from './components/cathexis.component';
     EbslPlaygroundComponent,
     EqbslGraphComponent,
     ZkDemoComponent,
-    CathexisComponent
+    CathexisComponent,
+    DocsComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -33,6 +35,7 @@ import { CathexisComponent } from './components/cathexis.component';
           @case ('eqbsl') { <app-eqbsl-graph /> }
           @case ('zk') { <app-zk-demo /> }
           @case ('cathexis') { <app-cathexis /> }
+          @case ('docs') { <app-docs /> }
         }
       </main>
 
@@ -50,6 +53,7 @@ export class AppComponent {
     { id: 'ebsl', label: 'EBSL Logic' },
     { id: 'eqbsl', label: 'EQBSL Graph' },
     { id: 'zk', label: 'ZK Proofs' },
-    { id: 'cathexis', label: 'Cathexis Handles' }
+    { id: 'cathexis', label: 'Cathexis Handles' },
+    { id: 'docs', label: 'Documentation' }
   ];
 }
