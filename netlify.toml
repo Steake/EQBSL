@@ -1,0 +1,12 @@
+[build]
+  # The command to build your application
+  command = "npm run build"
+  
+  # The directory where the build output is located
+  publish = "dist"
+
+# Redirect all requests to index.html for Angular routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
