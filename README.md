@@ -22,7 +22,7 @@ Built with Angular 21 and TypeScript, this tool transforms complex cryptographic
 
 Watch this comprehensive introduction to understand how EQBSL revolutionizes trust and reputation systems through mathematically-grounded, privacy-preserving approaches:
 
-[**▶️ Watch: Verifiable Epistemic Trust**](./Verifiable_Epistemic_Trust.mp4)
+<video src="./Verifiable_Epistemic_Trust.mp4" controls width="100%"></video>
 
 This video covers:
 - The fundamental limitations of traditional trust scores
@@ -61,7 +61,7 @@ Traditional reputation systems collapse complex trust relationships into a singl
    Prove trust properties without revealing:
    - The exact trust values
    - The evidence supporting them
-   - The identities involved
+   - The identities involved  
    
    Example: "I can prove this vendor has >80% trust from 50+ verified buyers, without revealing who those buyers are."
 
