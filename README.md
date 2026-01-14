@@ -22,7 +22,7 @@ Built with Angular 21 and TypeScript, this tool transforms complex cryptographic
 
 Watch this comprehensive introduction to understand how EQBSL revolutionizes trust and reputation systems through mathematically-grounded, privacy-preserving approaches:
 
-https://github.com/user-attachments/assets/Verifiable_Epistemic_Trust.mp4
+[**▶️ Watch: Verifiable Epistemic Trust**](./Verifiable_Epistemic_Trust.mp4)
 
 This video covers:
 - The fundamental limitations of traditional trust scores
