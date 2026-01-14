@@ -176,498 +176,342 @@ export class PaperDetailComponent {
   private paperDatabase: Record<string, PaperContent> = {
     'ebsl-zk': {
       id: 'ebsl-zk',
-      title: 'EBSL in ZK Reputation Systems',
-      authors: 'O. C. Hirst [Steake] & Shadowgraph Labs (2025)',
-      abstract: 'This paper explores the integration of Epistemic Belief State Logic (EBSL) with zero-knowledge proof systems for reputation management. We present a formal framework that enables privacy-preserving verification of trust and reputation states without revealing underlying evidence or individual assessments. The system combines subjective logic operations with cryptographic protocols to maintain both privacy and verifiability in distributed reputation networks.',
+      title: 'Evidence-Based Subjective Logic in ZKML Identity Systems',
+      authors: 'Oliver C. Hirst [Steake], Shadowgraph Labs (October 2025)',
+      abstract: 'This paper formalizes the integration of Evidence-Based Subjective Logic (EBSL) into Zero-Knowledge Machine Learning (ZKML) frameworks for decentralised identity. EBSL extends classical subjective logic by introducing direct mappings between observed evidence, belief entropy, and proof verifiability, enabling self-sovereign identities to express uncertainty as a first-class cryptographic primitive. When embedded into ZKML systems, EBSL provides the mathematical substrate for privacy-preserving, evidential reasoning — allowing trust computations to be both explainable and verifiable without revealing underlying data.',
       downloadUrl: 'https://raw.githubusercontent.com/Steake/EQBSL/main/Papers/EBSL%20in%20ZK%20Reputation%20Systems.pdf',
       sections: [
         {
-          title: '1. Introduction to EBSL',
+          title: '1. Introduction',
           content: `
-            <p>Epistemic Belief State Logic (EBSL) provides a mathematical framework for reasoning about uncertainty, belief, and disbelief in distributed systems. Unlike traditional binary trust models, EBSL represents opinions as triplets that capture three distinct dimensions:</p>
+            <p>The question of how to mathematically model trust lies at the heart of all decentralised identity systems. Traditional models reduce trust to binary verification: a credential is valid or invalid. However, in social, financial or epistemic systems, belief is not binary — it exists as a gradient of certainty informed by limited evidence.</p>
+            
+            <p>Evidence-Based Subjective Logic (EBSL) bridges this gap. It allows systems to reason over uncertain, incomplete, and conflicting data using probabilistic opinions rather than fixed truth values.</p>
+
+            <p>This becomes particularly powerful in the context of Zero-Knowledge Machine Learning (ZKML) — systems that can compute over encrypted data and prove the correctness of inference without revealing inputs or model parameters. By combining EBSL and ZKML, we arrive at a new class of identity architecture: <strong>verifiable epistemic trust systems</strong> — networks capable of reasoning about belief, evidence, and doubt in a mathematically grounded and cryptographically secure manner.</p>
+          `
+        },
+        {
+          title: '2. Conceptual Framework',
+          content: `
+            <p>Subjective Logic generalizes classical probability by decomposing knowledge about a proposition into three components:</p>
             
             <ul>
-              <li><strong>Belief (b)</strong>: The evidence supporting a positive assessment</li>
-              <li><strong>Disbelief (d)</strong>: The evidence supporting a negative assessment</li>
-              <li><strong>Uncertainty (u)</strong>: The lack of evidence in either direction</li>
+              <li><strong>b = belief</strong>: Evidence supporting the proposition</li>
+              <li><strong>d = disbelief</strong>: Evidence against the proposition</li>
+              <li><strong>u = uncertainty</strong>: Lack of evidence in either direction</li>
             </ul>
 
-            <p>These components are constrained by the fundamental relation:</p>
-            <div class="math-display">b + d + u = 1</div>
+            <p>These components satisfy the constraint:</p>
+            <div class="math-display">b + d + u = 1, &nbsp;&nbsp; b, d, u ∈ [0, 1]</div>
             
-            <p>This representation allows for explicit modeling of uncertainty, which is critical in reputation systems where evidence may be incomplete or contradictory. The EBSL framework also defines operators for combining opinions, discounting trust based on source reliability, and reasoning about transitive trust relationships.</p>
+            <p>The expected probability of a proposition X given an opinion ω is:</p>
+            <div class="math-display">E(ω) = b + a · u</div>
+            <p>where <em>a</em> is the base rate — a prior expectation in the absence of evidence.</p>
+
+            <p><strong>Evidence Incorporation:</strong> EBSL extends this model by linking belief components directly to observed evidence counts:</p>
+            <div class="math-display">b = r/(r+s+2), &nbsp;&nbsp; d = s/(r+s+2), &nbsp;&nbsp; u = 2/(r+s+2)</div>
+            <p>where <em>r</em> and <em>s</em> denote positive and negative evidence supporting a claim. This allows a seamless Bayesian update mechanism as new data arrive.</p>
           `
         },
         {
-          title: '2. Zero-Knowledge Integration',
+          title: '3. Mathematical Formulation',
           content: `
-            <p>Zero-knowledge proofs enable one party (the prover) to convince another party (the verifier) that a statement is true without revealing any information beyond the validity of the statement itself. In the context of reputation systems, ZK proofs provide several key benefits:</p>
+            <p><strong>Opinion Space:</strong> Define the opinion space as:</p>
+            <div class="math-display">Ω = {(b, d, u, a) ∈ [0, 1]<sup>4</sup> | b + d + u = 1}</div>
+            <p>Each opinion represents a subjective state on the proposition X.</p>
+
+            <p><strong>Fusion Operator:</strong> Two opinions ω₁ and ω₂ can be fused under independence as:</p>
+            <div class="math-display">ω₁ ⊕ ω₂ = ((b₁u₂ + b₂u₁)/k, (d₁u₂ + d₂u₁)/k, (u₁u₂)/k, a)</div>
+            <p>where k = u₁ + u₂ − u₁u₂. This operator allows for the propagation of trust through a network of peers.</p>
+
+            <p><strong>Discounting Operator:</strong> To propagate trust through transitive relationships: ω<sub>ik</sub> = ω<sub>ij</sub> ⊗ ω<sub>jk</sub>, with:</p>
+            <div class="math-display">b<sub>ik</sub> = b<sub>ij</sub>b<sub>jk</sub>, &nbsp;&nbsp; d<sub>ik</sub> = d<sub>ij</sub> + u<sub>ij</sub>d<sub>jk</sub>, &nbsp;&nbsp; u<sub>ik</sub> = u<sub>ij</sub>u<sub>jk</sub></div>
+          `
+        },
+        {
+          title: '4. Integration into ZKML',
+          content: `
+            <p><strong>Zero-Knowledge Constraints:</strong> Each opinion update is represented as a circuit:</p>
+            <div class="math-display">C<sub>EBSL</sub>(ω₁, ω₂) = ω₃</div>
+            <p>and verified under zero-knowledge constraint:</p>
+            <div class="math-display">VerifyZK(π) ⇒ b + d + u = 1, &nbsp; 0 ≤ b, d, u ≤ 1</div>
+            <p>Thus, trust propagation can be verified cryptographically without exposing the contributing evidence.</p>
+
+            <p><strong>ZKML Training and Inference:</strong> Machine learning models operating in zero-knowledge can utilize belief vectors ω<sub>i</sub> as input features. The model computes:</p>
+            <div class="math-display">ŷ<sub>i</sub> = f<sub>θ</sub>(ω<sub>i</sub>)</div>
+            <p>where f<sub>θ</sub> is a parameterized function (e.g. neural network). Proof of correct inference is produced by a ZKML prover:</p>
+            <div class="math-display">Proof = ProveZK(f<sub>θ</sub>, ω<sub>i</sub>, ŷ<sub>i</sub>)</div>
+            <p>This enables explainable predictions over uncertain inputs without revealing raw evidence or model parameters.</p>
+          `
+        },
+        {
+          title: '5. Identity and Reputation Modeling',
+          content: `
+            <p><strong>Belief Tensor for Identity:</strong> Each identity I<sub>i</sub> is defined as a tensor of opinions:</p>
+            <div class="math-display">T<sub>i</sub> = [ω<sub>i,1</sub>, ω<sub>i,2</sub>, ..., ω<sub>i,n</sub>]</div>
+            <p>representing beliefs across different contexts — e.g. reliability, honesty, performance. Identity thus becomes an evidential field, evolving as opinions are fused over time.</p>
+
+            <p><strong>Temporal Update Rule:</strong> Reputation updates follow an exponential decay model:</p>
+            <div class="math-display">R<sub>i</sub><sup>(t+1)</sup> = βR<sub>i</sub><sup>(t)</sup> + (1 − β)E(ω<sub>i</sub><sup>(t)</sup>)</div>
+            <p>where β encodes memory persistence. New evidence adjusts the identity's belief distribution without revealing raw transactions.</p>
+          `
+        },
+        {
+          title: '6. Algorithmic Implementation',
+          content: `
+            <p>The EBSL-based reputation update in ZKML systems follows this algorithm:</p>
             
-            <ul>
-              <li><strong>Privacy Preservation</strong>: Users can prove reputation thresholds without exposing exact scores</li>
-              <li><strong>Evidence Confidentiality</strong>: The underlying evidence and assessments remain private</li>
-              <li><strong>Selective Disclosure</strong>: Parties can reveal specific properties without full transparency</li>
-            </ul>
+            <ol>
+              <li>Compute opinion from evidence: ω<sub>i</sub> ← f<sub>EBSL</sub>(E<sub>i</sub><sup>(t)</sup>)</li>
+              <li>Fuse neighbor opinions: ω'<sub>i</sub> ← ⨁<sub>j∈N(i)</sub> ω<sub>j</sub></li>
+              <li>Generate proof: π ← ProveZK(C<sub>EBSL</sub>, ω<sub>i</sub>, ω'<sub>i</sub>)</li>
+              <li>Verify proof: VerifyZK(π) = 1</li>
+              <li>Update reputation: R<sub>i</sub><sup>(t+1)</sup> ← βR<sub>i</sub><sup>(t)</sup> + (1 − β)E(ω'<sub>i</sub>)</li>
+            </ol>
 
-            <p>We leverage zk-SNARKs (Zero-Knowledge Succinct Non-Interactive Arguments of Knowledge) to create compact, efficiently verifiable proofs about EBSL opinion states. The key technical challenge is encoding the floating-point EBSL operations into arithmetic circuits compatible with zk-SNARK proving systems.</p>
+            <p>This process allows decentralised identity networks to maintain verifiable reputation states even under partial observability and privacy constraints.</p>
           `
         },
         {
-          title: '3. Reputation System Architecture',
+          title: '7. Entropy and Uncertainty',
           content: `
-            <p>Our ZK-EBSL reputation system consists of several key components:</p>
+            <p>Uncertainty <em>u</em> measures informational entropy:</p>
+            <div class="math-display">H(ω) = −b log b − d log d − u log u</div>
+            <p>This entropy directly informs the model's confidence calibration, allowing agents to evaluate trustworthiness as a function of evidential entropy rather than deterministic assertions.</p>
 
-            <ul>
-              <li><strong>Opinion Store</strong>: Cryptographically committed storage of EBSL opinions</li>
-              <li><strong>Aggregation Circuit</strong>: zk-SNARK circuit for combining opinions using EBSL operators</li>
-              <li><strong>Proof Generator</strong>: Constructs ZK proofs of reputation properties</li>
-              <li><strong>Verification Layer</strong>: Smart contracts or distributed nodes validating proofs</li>
-            </ul>
-
-            <p>The architecture ensures that while individual opinions remain private, aggregate reputation metrics can be publicly verified through zero-knowledge proofs. This enables applications such as anonymous credential systems, privacy-preserving recommendation networks, and confidential voting mechanisms.</p>
-          `,
-          subsections: [
-            {
-              title: '3.1 Commitment Scheme',
-              content: `
-                <p>We use Pedersen commitments to bind parties to their opinion values without revealing them:</p>
-                <div class="math-display">C(b, d, u) = g^b · h^d · k^u · r^s</div>
-                <p>where <em>g</em>, <em>h</em>, <em>k</em>, <em>r</em> are generators and <em>s</em> is a random blinding factor. This commitment is both hiding (reveals nothing about b, d, u) and binding (cannot be changed after commitment).</p>
-              `
-            },
-            {
-              title: '3.2 Aggregation Protocol',
-              content: `
-                <p>The consensus operator in EBSL combines multiple opinions from different sources. For two opinions ω<sub>A</sub> = (b<sub>A</sub>, d<sub>A</sub>, u<sub>A</sub>) and ω<sub>B</sub> = (b<sub>B</sub>, d<sub>B</sub>, u<sub>B</sub>), the fused opinion is:</p>
-                
-                <div class="math-display">
-                  b = (b<sub>A</sub>u<sub>B</sub> + b<sub>B</sub>u<sub>A</sub>) / (u<sub>A</sub> + u<sub>B</sub> - u<sub>A</sub>u<sub>B</sub>)
-                </div>
-                
-                <p>Our ZK circuit implements this operation while maintaining privacy of individual opinions. The prover demonstrates that the aggregate opinion was correctly computed without revealing the source opinions.</p>
-              `
-            }
-          ]
-        },
-        {
-          title: '4. Privacy-Preserving Trust Computations',
-          content: `
-            <p>The system supports several privacy-preserving operations:</p>
-
-            <ul>
-              <li><strong>Threshold Proofs</strong>: Prove belief exceeds a threshold without revealing exact value</li>
-              <li><strong>Range Proofs</strong>: Demonstrate reputation falls within a specified range</li>
-              <li><strong>Relationship Proofs</strong>: Show comparative relationships between hidden opinions</li>
-              <li><strong>Transitivity Proofs</strong>: Verify trust chains without exposing intermediate assessments</li>
-            </ul>
-
-            <p>Each of these primitives is realized through carefully designed zk-SNARK circuits that encode EBSL operations. The proofs are succinct (constant size regardless of computation complexity) and non-interactive (require no back-and-forth between prover and verifier).</p>
+            <p>Entropy regularization in ZKML training can be achieved via:</p>
+            <div class="math-display">L<sub>trust</sub> = ‖E(ω) − ŷ‖² + λH(ω)</div>
+            <p>balancing belief fidelity with epistemic humility.</p>
           `
         },
         {
-          title: '5. Implementation Considerations',
+          title: '8. Applications',
           content: `
-            <p>Practical deployment of ZK-EBSL systems requires addressing several challenges:</p>
+            <p><strong>Verifiable Reputation Graphs:</strong> Reputation is computed through EBSL fusion and proven in ZK, forming a decentralised, privacy-preserving trust graph suitable for social, financial, or DAO governance applications.</p>
 
-            <ul>
-              <li><strong>Fixed-Point Arithmetic</strong>: EBSL uses real numbers, but circuits require finite fields. We employ fixed-point representations with sufficient precision (typically 32-64 bits).</li>
-              <li><strong>Proof Generation Time</strong>: zk-SNARK proving can be computationally intensive. We optimize circuits and use batching techniques to improve throughput.</li>
-              <li><strong>Trusted Setup</strong>: Many zk-SNARK systems require a trusted setup ceremony. We recommend using transparent alternatives like STARKs or Bulletproofs where appropriate.</li>
-              <li><strong>Base Rate Handling</strong>: EBSL opinions include a base rate parameter. This must be consistently handled across the system to ensure correct aggregation.</li>
-            </ul>
+            <p><strong>Evidential Credential Verification:</strong> Institutions issue attestations in the form of opinions rather than static credentials. A verifier checks only the ZK proof that the opinion satisfies belief normalization and threshold conditions.</p>
 
-            <p>We provide reference implementations in Circom (for circuit definition) and snarkjs (for proof generation and verification) that demonstrate these techniques in practice.</p>
+            <p><strong>Sybil Resistance:</strong> EBSL-based identities possess measurable uncertainty; newly created identities exhibit high <em>u</em>, reducing their influence until evidence accumulates.</p>
           `
         },
         {
-          title: '6. Conclusion',
+          title: '9. Conclusion',
           content: `
-            <p>The integration of EBSL with zero-knowledge proofs creates a powerful framework for privacy-preserving reputation systems. By enabling verifiable computations over hidden opinions, we can build trust networks that protect individual privacy while maintaining collective accountability.</p>
+            <p>Evidence-Based Subjective Logic in ZKML Identity Systems establishes a foundation for verifiable epistemic reasoning — a world where digital identity evolves through evidence, where belief becomes a measurable construct, and where privacy and transparency are no longer opposites.</p>
 
-            <p>Future work includes optimizing circuit implementations, extending to quantum-resistant proof systems, and developing standardized protocols for inter-system reputation portability. The ZK-EBSL framework represents a significant step toward building truly private yet trustworthy digital reputation infrastructure.</p>
+            <p>By uniting evidential logic, probabilistic reasoning, and zero-knowledge cryptography, EBSL represents not just a framework for decentralised identity, but the blueprint of a new digital epistemology.</p>
+
+            <p>Trust is no longer an assumption or a score — it is a dynamic, evidential waveform verified by mathematics.</p>
           `
-        }
+        },
       ]
     },
     'eqbsl-quantum': {
       id: 'eqbsl-quantum',
-      title: 'EQBSL+ZK: Quantum Extensions',
-      authors: 'O. C. Hirst [Steake] & Shadowgraph Labs (2025)',
-      abstract: 'This paper presents Extended Quantum Belief State Logic (EQBSL), a framework that extends traditional EBSL with quantum-resistant cryptographic primitives and post-quantum zero-knowledge proof systems. We address the emerging threat of quantum computers to existing cryptographic reputation systems and propose a comprehensive solution that maintains security in the post-quantum era while preserving the expressive power of belief state logic.',
+      title: 'EQBSL: Against Trust Scores',
+      authors: 'Oliver C. Hirst, Independent Researcher (December 2025)',
+      abstract: 'Most "trust scores" are numerology with a user interface: confident decimals that conceal their own provenance. Evidence-Based Subjective Logic (EBSL) is a corrective, because it refuses to treat trust as a mystical scalar and instead anchors it in manipulable, auditable evidence. This paper presents EQBSL, a systems-oriented extension that lifts evidence-based trust into a structured, vectorised, operator-defined form suitable for dynamic graphs and hypergraphs, and for downstream machine learning via stable trust embeddings.',
       downloadUrl: 'https://raw.githubusercontent.com/Steake/EQBSL/main/Papers/EQBSL%2BZK.pdf',
       sections: [
         {
-          title: '1. Quantum Resistance Background',
+          title: '1. Introduction',
           content: `
-            <p>The advent of large-scale quantum computers poses a fundamental threat to current cryptographic systems. Shor's algorithm can efficiently factor large integers and compute discrete logarithms, breaking RSA, DSA, and elliptic curve cryptography. This has profound implications for reputation systems that rely on these primitives:</p>
+            <p>Trust, in computation, is often treated as though it were weather: a quantity one can simply "measure" and then operate on as if the measurement were innocent. In reality it is a ledger of claims, counterclaims, and uncertainty—and any framework that pretends otherwise ends up smuggling assumptions through the back door.</p>
 
-            <ul>
-              <li><strong>Signature Schemes</strong>: Current digital signatures would become forgeable</li>
-              <li><strong>Commitment Schemes</strong>: Many commitments rely on discrete log assumptions</li>
-              <li><strong>ZK Proof Systems</strong>: zk-SNARKs and many other protocols depend on elliptic curve pairings</li>
-            </ul>
+            <p>Subjective Logic provides a compact algebra for reasoning under uncertainty, including trust transitivity and opinion fusion. Evidence-Based Subjective Logic (EBSL) strengthens this foundation by centring the calculus on evidence flow, addressing structural failure modes that arise when applying classical discounting to general trust networks.</p>
 
-            <p>EQBSL addresses these vulnerabilities by building on post-quantum cryptographic foundations that remain secure even against quantum adversaries. We focus on lattice-based, hash-based, and multivariate polynomial cryptography as the basis for quantum-resistant trust systems.</p>
+            <p>This paper proposes EQBSL as a pragmatic extension of EBSL for modern systems where: (i) interactions evolve over time, (ii) evidence is multi-dimensional and context-bound, (iii) multi-party interactions are native (hyperedges rather than forced pairwise fictions), and (iv) downstream models benefit from stable vector embeddings per agent that retain a clear chain of custody back to evidence.</p>
           `
         },
         {
-          title: '2. Extended Quantum Belief State Logic Framework',
+          title: '2. Subjective Logic and EBSL',
           content: `
-            <p>EQBSL extends classical EBSL in several key dimensions:</p>
+            <p><strong>Subjective Logic:</strong> Classical Subjective Logic represents an opinion of agent A about proposition X as a 4-tuple:</p>
+            <div class="math-display">ω<sup>X</sup><sub>A</sub> = (b, d, u, a)</div>
+            <p>where <em>b</em> is belief, <em>d</em> is disbelief, <em>u</em> is uncertainty, and <em>a</em> is the base rate (the prior probability when evidence is uninformative). The opinion satisfies b + d + u = 1.</p>
 
-            <ul>
-              <li><strong>Quantum Opinion States</strong>: Opinions encoded in quantum-resistant commitment schemes</li>
-              <li><strong>Lattice-Based Aggregation</strong>: Trust fusion using lattice-based cryptographic operations</li>
-              <li><strong>Post-Quantum Signatures</strong>: Integration with CRYSTALS-Dilithium and other PQC signature schemes</li>
-              <li><strong>Quantum-Resistant ZK</strong>: Proof systems based on symmetric cryptography and hash functions</li>
-            </ul>
+            <p><strong>Evidence-Based Subjective Logic (EBSL):</strong> EBSL reframes opinions explicitly in terms of evidence counts. For a binary proposition, interpret <em>r</em> as the amount of positive evidence, <em>s</em> as the amount of negative evidence, and <em>K</em> &gt; 0 as a fixed normalisation constant. The mapping from evidence to opinion is:</p>
+            <div class="math-display">b = r/(r+s+K), &nbsp;&nbsp; d = s/(r+s+K), &nbsp;&nbsp; u = K/(r+s+K)</div>
 
-            <p>The extended framework maintains the semantic properties of EBSL while ensuring all cryptographic operations resist quantum attacks. This requires careful redesign of the underlying primitives while preserving the high-level abstractions that make EBSL useful for modeling trust.</p>
+            <p>Key properties: Evidence is additive, uncertainty decays with evidence, and network computation can be implemented as evidence-flow operations.</p>
           `
         },
         {
-          title: '3. Post-Quantum Cryptographic Primitives',
+          title: '3. EQBSL Framework',
           content: `
-            <p>EQBSL relies on several classes of post-quantum primitives:</p>
-          `,
-          subsections: [
-            {
-              title: '3.1 Lattice-Based Commitments',
-              content: `
-                <p>Instead of Pedersen commitments, we use lattice-based schemes such as those based on the Learning With Errors (LWE) problem. A commitment to opinion (b, d, u) takes the form:</p>
-                
-                <div class="math-display">C = A · s + e + m · ⌊q/2⌋</div>
-                
-                <p>where <strong>A</strong> is a public random matrix, <strong>s</strong> is a secret vector, <strong>e</strong> is a small error vector, <strong>m</strong> encodes the opinion values, and <em>q</em> is a modulus. The security relies on the hardness of LWE, which is believed to be quantum-resistant.</p>
-              `
-            },
-            {
-              title: '3.2 Hash-Based Signatures',
-              content: `
-                <p>For signing reputation attestations, we employ hash-based signature schemes like SPHINCS+. These signatures are based solely on the security of cryptographic hash functions, making them highly resistant to both classical and quantum attacks:</p>
+            <p>EQBSL lifts evidence-based opinions into a structured, vectorised, operator form over dynamic graphs and hypergraphs, with explicit temporal and contextual semantics.</p>
 
-                <ul>
-                  <li><strong>Stateless Operation</strong>: Unlike earlier hash-based schemes, SPHINCS+ requires no state management</li>
-                  <li><strong>Provable Security</strong>: Security reduces directly to hash function properties</li>
-                  <li><strong>Conservative Choice</strong>: Hash functions are well-understood and time-tested</li>
-                </ul>
+            <p><strong>Evidence Tensors:</strong> Instead of scalar (r, s) per relationship, maintain a richer evidence vector e<sub>ij</sub>(t) ∈ ℝ<sup>m</sup> for each ordered pair of agents (i, j) at time t. Components can include counts or scores for: successful vs. failed trades, on-time vs. late delivery, governance alignment votes, dispute outcomes, attestation patterns, and time-weighted recency terms.</p>
 
-                <p>The trade-off is larger signature sizes compared to classical schemes, but this is acceptable for many reputation system applications where security is paramount.</p>
-              `
-            },
-            {
-              title: '3.3 Multivariate Polynomial Systems',
-              content: `
-                <p>For certain operations, we leverage multivariate polynomial cryptography. The security of these systems relies on the difficulty of solving systems of multivariate quadratic equations over finite fields, a problem believed to be hard even for quantum computers.</p>
-
-                <p>We use these primitives particularly for key encapsulation and certain specialized proof protocols that benefit from the algebraic structure of multivariate systems.</p>
-              `
-            }
-          ]
-        },
-        {
-          title: '4. Quantum-Resistant ZK Proofs',
-          content: `
-            <p>The most challenging aspect of EQBSL is developing zero-knowledge proof systems that remain secure against quantum adversaries. We employ several approaches:</p>
-
-            <ul>
-              <li><strong>ZK-STARKs</strong>: Transparent, quantum-resistant proofs based on collision-resistant hash functions</li>
-              <li><strong>Ligero Family</strong>: Interactive proof systems converted to non-interactive using Fiat-Shamir in the quantum random oracle model</li>
-              <li><strong>MPC-in-the-Head</strong>: Proofs based on secure multi-party computation, providing quantum resistance through information-theoretic security</li>
-            </ul>
-
-            <p>Each approach has different trade-offs in terms of proof size, verification time, and assumptions. EQBSL provides a modular framework that can accommodate different proof systems depending on application requirements.</p>
-          `,
-          subsections: [
-            {
-              title: '4.1 STARK-Based Opinion Proofs',
-              content: `
-                <p>ZK-STARKs (Zero-Knowledge Scalable Transparent Arguments of Knowledge) provide quantum resistance without requiring a trusted setup. For EQBSL operations, we encode the computation as an algebraic intermediate representation (AIR) and prove correct execution:</p>
-
-                <div class="math-display">∀ i: f(T[i+1]) = g(T[i], w[i])</div>
-
-                <p>where <strong>T</strong> is the execution trace, <strong>w</strong> contains witness values (the hidden opinions), and <em>f</em>, <em>g</em> encode the EBSL operations. The prover demonstrates that the trace is consistent with the claimed result without revealing the intermediate opinion values.</p>
-              `
-            },
-            {
-              title: '4.2 Interactive Proof Compilation',
-              content: `
-                <p>For certain applications, we use interactive proof protocols compiled to non-interactive form using the Fiat-Shamir transform in the quantum random oracle model (QROM). Recent results show that with appropriate parameter choices, this transformation remains secure against quantum adversaries.</p>
-
-                <p>The key is ensuring that the hash function used in Fiat-Shamir is modeled as a quantum random oracle, and that the underlying sigma protocol satisfies special soundness properties. Our implementation carefully validates these requirements for each proof protocol used in EQBSL.</p>
-              `
-            }
-          ]
-        },
-        {
-          title: '5. Protocol Specifications',
-          content: `
-            <p>EQBSL defines standardized protocols for common reputation system operations:</p>
-
-            <ul>
-              <li><strong>Opinion Registration</strong>: Submitting and committing to an opinion using lattice-based commitments</li>
-              <li><strong>Aggregate Proof Generation</strong>: Proving correct aggregation of multiple opinions using STARK proofs</li>
-              <li><strong>Threshold Verification</strong>: Demonstrating reputation exceeds a threshold without revealing the exact value</li>
-              <li><strong>Transitivity Proof</strong>: Proving indirect trust relationships through chains of opinions</li>
-            </ul>
-
-            <p>Each protocol is specified with precise security parameters, computational complexity bounds, and migration paths from classical EBSL systems. This enables gradual deployment of quantum-resistant infrastructure before quantum threats become practical.</p>
+            <p>To recover scalar EBSL evidence parameters, define nonnegative aggregation functionals:</p>
+            <div class="math-display">r<sub>ij</sub>(t) = φ<sup>+</sup>(e<sub>ij</sub>(t)), &nbsp;&nbsp; s<sub>ij</sub>(t) = φ<sup>−</sup>(e<sub>ij</sub>(t))</div>
+            <p>where φ<sup>+</sup>, φ<sup>−</sup> : ℝ<sup>m</sup> → ℝ<sub>≥0</sub> are application-defined (often linear) maps.</p>
           `
         },
         {
-          title: '6. Performance Analysis',
+          title: '4. Operator View of Trust Propagation',
           content: `
-            <p>Post-quantum cryptography generally incurs higher computational costs than classical alternatives. Our benchmarks show:</p>
+            <p>Rather than ad-hoc "iterate until convergence" rules, EQBSL models trust-state evolution as an operator acting on the global evidence state.</p>
 
-            <ul>
-              <li><strong>Commitment Generation</strong>: 2-5x slower than Pedersen commitments</li>
-              <li><strong>Proof Generation</strong>: 10-100x slower depending on proof system choice (STARKs vs. Ligero)</li>
-              <li><strong>Verification Time</strong>: Generally comparable or faster than classical systems</li>
-              <li><strong>Proof Size</strong>: 10-1000x larger depending on system (STARKs are particularly large)</li>
-            </ul>
+            <p>Let the time-indexed (hyper)graph be G<sub>t</sub> = (V, E<sub>t</sub>), and let E<sub>t</sub> denote the collection of all evidence vectors on directed edges. Let Δ<sub>t</sub> denote the collection of new events observed between t and t + 1. Define a global update operator:</p>
+            <div class="math-display">F : (E<sub>t</sub>, Δ<sub>t</sub>) ↦ E<sub>t+1</sub></div>
 
-            <p>These overheads are acceptable for many applications, particularly those where reputation updates are infrequent relative to queries. We also identify optimization opportunities through batching, recursive proof composition, and hardware acceleration.</p>
+            <p>The operator F encodes: EBSL-style evidence combination rules, temporal decay, context-dependent weighting, and hyperedge aggregation. The result is a well-defined state update step suitable for batch or streaming systems.</p>
           `
         },
         {
-          title: '7. Conclusion and Future Directions',
+          title: '5. Hypergraph-Aware Trust',
           content: `
-            <p>EQBSL provides a comprehensive framework for building reputation systems that will remain secure in the post-quantum era. By carefully integrating lattice-based cryptography, hash-based signatures, and quantum-resistant zero-knowledge proofs, we enable trust infrastructure that can withstand future cryptanalytic advances.</p>
+            <p>Many interactions are natively multi-party (DAOs, multi-sig execution, group swaps, committees). Forcing these into pairwise edges tends to erase accountability structure.</p>
 
-            <p>Future work includes standardization efforts, formal security proofs in quantum models, integration with emerging PQC standards (NIST selections), and development of efficient implementations for resource-constrained devices. As quantum computing technology advances, EQBSL provides a roadmap for evolving existing reputation systems toward quantum resistance.</p>
+            <p>EQBSL represents evidence per hyperedge:</p>
+            <div class="math-display">e<sub>h</sub>(t), &nbsp;&nbsp; h ⊆ V, |h| ≥ 2</div>
+
+            <p>and defines a decomposition rule that allocates hyperedge evidence into pairwise or groupwise evidence tensors. One generic form is:</p>
+            <div class="math-display">e<sub>ij</sub>(t) += Σ<sub>h∋i,j</sub> α<sub>ijh</sub> Π<sub>ij</sub>(e<sub>h</sub>(t))</div>
+            <p>where Π<sub>ij</sub> is a projection / attribution map and α<sub>ijh</sub> are allocation coefficients (e.g. symmetric, role-weighted, or protocol-specific).</p>
+          `
+        },
+        {
+          title: '6. Node-Level Trust Embeddings',
+          content: `
+            <p>EQBSL outputs stable per-agent embeddings:</p>
+            <div class="math-display">u<sub>i</sub>(t) = Γ(i, E<sub>t</sub>, G<sub>t</sub>) ∈ ℝ<sup>d<sub>u</sub></sup></div>
+
+            <p>where Γ aggregates how the network "feels" about agent i across evidence/opinions, structural position, and temporal patterns. These embeddings are intended as the main interface for downstream components (e.g. ranking, anomaly detection, clustering, recommendation, or human-facing summarisation layers).</p>
+
+            <p>The crucial requirement is that they remain tethered to the evidence ledger, so that an embedding can be challenged with more than indignation.</p>
+          `
+        },
+        {
+          title: '7. Proof-Carrying EQBSL (Bridge to ZK)',
+          content: `
+            <p>Having a principled trust operator is one thing; forcing systems to actually use it is another. The companion ZK paper takes the state model just described and wraps it in cryptographic obligation.</p>
+
+            <p>At time t, let the full EQBSL state be S<sub>t</sub> := (G<sub>t</sub>, E<sub>t</sub>). A proof-carrying instantiation publishes a binding commitment C<sub>t</sub> = Com(S<sub>t</sub>; r<sub>t</sub>), where Com is a standard vector commitment scheme.</p>
+
+            <p>Define an arithmetic circuit C<sub>F</sub> : (S<sub>t</sub>, Δ<sub>t</sub>) ↦ S<sub>t+1</sub> implementing exactly the EQBSL update. A zero-knowledge proof system is then used to prove that the published state transitions respect the operator F, without revealing underlying evidence.</p>
+
+            <p>The verifier need never see the evidence vectors; they see only that the same operator F defined in this paper actually governed the update. The distance between spec and implementation collapses into a proof.</p>
+          `
+        },
+        {
+          title: '8. Conclusion',
+          content: `
+            <p>EQBSL is deliberately framed as a systems-level lift: it keeps EBSL's evidence-centric foundation and extends the representation so trust becomes a first-class, vectorised state that composes with time, hyperedges, and machine learning pipelines.</p>
+
+            <p>The exact choices of φ<sup>±</sup>, F, and Γ are domain-specific; the virtue is that these choices are exposed as parameters rather than buried as folklore. That makes the system falsifiable: you can perturb evidence, trace effects, and find the fault lines.</p>
+
+            <p>The proof-carrying layer sketched here and detailed in the companion paper does not change the algebra; it constrains the implementation. The system designer may still make poor choices, but they can no longer claim that the code does one thing while the evidence calculus says another. For a domain long dominated by oracular trust scores and unexplained bans, that is already a cultural revolution.</p>
           `
         }
       ]
     },
     'proof-trust': {
       id: 'proof-trust',
-      title: 'Proof-Carrying Trust',
-      authors: 'O. C. Hirst [Steake] & Shadowgraph Labs (2025)',
-      abstract: 'Drawing inspiration from proof-carrying code, we introduce proof-carrying trust: a framework where trust assertions are accompanied by cryptographic proofs of their validity. This approach enables distributed systems to make trust decisions based on verifiable evidence rather than blind faith. We develop the theoretical foundations, present practical implementations, and explore applications in decentralized networks, supply chains, and federated systems.',
+      title: 'Proof-Carrying Trust: Zero-Knowledge Constraints for EQBSL',
+      authors: 'O. C. Hirst, Independent Researcher (December 2025)',
+      abstract: 'Trust systems on the internet tend to behave like oracles: they emit scores, decline to explain themselves, and insist that users take it on faith that the internals are sane. The EQBSL framework replaces this with an evidence-flow calculus for trust on dynamic (hyper)graphs, but it still leaves a gap between specification and implementation. This paper closes that gap with a proof-carrying construction: we define circuits and zero-knowledge constraints that force each trust update to respect the EQBSL operator, without revealing underlying evidence. In short, if a system claims to be running the EQBSL calculus, it can now be compelled to prove it.',
       downloadUrl: 'https://raw.githubusercontent.com/Steake/EQBSL/main/Papers/Proof-Carrying-Trust.pdf',
       sections: [
         {
-          title: '1. Trust in Distributed Systems',
+          title: '1. Introduction',
           content: `
-            <p>Distributed systems face a fundamental challenge: how can independent parties establish and maintain trust without a central authority? Traditional approaches rely on:</p>
+            <p>A trust score that cannot be interrogated is not a metric, it is a superstition. The EQBSL paper attacks this by putting trust on an explicit footing: evidence tensors on edges, an operator F that rewrites the state step-by-step, and a mapping from evidence to Subjective Logic opinions grounded in EBSL. The result is a calculus that makes its assumptions legible.</p>
 
-            <ul>
-              <li><strong>Centralized PKI</strong>: Certificate authorities that serve as trust anchors</li>
-              <li><strong>Web of Trust</strong>: Decentralized but subjective trust relationships</li>
-              <li><strong>Reputation Systems</strong>: Historical behavior as a predictor of future trustworthiness</li>
-            </ul>
+            <p>What EQBSL does not do on its own is prevent an implementation from quietly cheating. Nothing in the algebra stops a developer from publishing E<sub>t+1</sub> that is only loosely related to F(E<sub>t</sub>, Δ<sub>t</sub>), or embeddings u<sub>i</sub>(t) that have a more mystical than mathematical relationship to the stated operator Γ.</p>
 
-            <p>Each approach has limitations. Centralized systems create single points of failure and censorship. Web of trust models are difficult to reason about formally. Pure reputation systems can be manipulated through sybil attacks and strategic behavior.</p>
-
-            <p>Proof-carrying trust offers a complementary approach: instead of asking "should I trust this entity?", we ask "what evidence supports this trust claim, and can I verify it independently?"</p>
+            <p>This paper proposes a remedy: a proof-carrying instantiation in which every EQBSL state transition and, optionally, every published embedding, is accompanied by a zero-knowledge proof that the right algebra was followed. Evidence and contextual details can remain private; the obedience to F and Γ cannot.</p>
           `
         },
         {
-          title: '2. Proof-Carrying Code Analogy',
+          title: '2. EQBSL State Model (Recap)',
           content: `
-            <p>Proof-carrying code (PCC) is a security technique where code is accompanied by a formal proof that it satisfies certain safety properties. The code consumer verifies the proof rather than analyzing the code itself:</p>
+            <p>We adopt the notation and definitions of EQBSL, summarised only as much as is needed to define constraints.</p>
 
-            <div class="math-display">Code + Proof → Verification → Trust</div>
+            <p><strong>Evidence and Opinions:</strong> For a binary proposition, EBSL interprets <em>r</em> as the amount of positive evidence, <em>s</em> as the amount of negative evidence, and <em>K</em> &gt; 0 as a fixed normalisation constant. The mapping from evidence to opinion is:</p>
+            <div class="math-display">b = r/(r+s+K), &nbsp;&nbsp; d = s/(r+s+K), &nbsp;&nbsp; u = K/(r+s+K)</div>
+            <p>with b + d + u = 1.</p>
 
-            <p>Proof-carrying trust applies the same principle to trust relationships:</p>
+            <p><strong>Evidence Tensors:</strong> For each ordered pair of agents (i, j) and time t, EQBSL maintains an evidence vector e<sub>ij</sub>(t) ∈ ℝ<sup>m</sup>. Scalar evidence parameters are recovered via nonnegative aggregation maps:</p>
+            <div class="math-display">r<sub>ij</sub>(t) = φ<sup>+</sup>(e<sub>ij</sub>(t)), &nbsp;&nbsp; s<sub>ij</sub>(t) = φ<sup>−</sup>(e<sub>ij</sub>(t))</div>
 
-            <div class="math-display">Assertion + Proof → Verification → Trust Decision</div>
-
-            <p>Just as PCC enables safe execution of untrusted code, proof-carrying trust enables safe interaction with untrusted parties. The key insight is that trust claims can be backed by verifiable cryptographic evidence, making trust decisions objective rather than subjective.</p>
-          `,
-          subsections: [
-            {
-              title: '2.1 Trust Assertions',
-              content: `
-                <p>A trust assertion is a statement about an entity's properties or behaviors. Examples include:</p>
-
-                <ul>
-                  <li>"Entity A has reputation score ≥ 0.8 based on ≥ 50 reviews"</li>
-                  <li>"Entity B has been vouched for by at least 3 entities with reputation ≥ 0.9"</li>
-                  <li>"Entity C has successfully completed ≥ 100 transactions with dispute rate &lt; 2%"</li>
-                </ul>
-
-                <p>Each assertion is formalized as a logical proposition that can be true or false. The role of proof-carrying trust is to provide cryptographic evidence that substantiates these assertions.</p>
-              `
-            },
-            {
-              title: '2.2 Trust Proofs',
-              content: `
-                <p>A trust proof is a cryptographic object that demonstrates the validity of a trust assertion. Using zero-knowledge techniques, proofs can be constructed that reveal only the claim, not the underlying evidence:</p>
-
-                <div class="math-display">π = Prove(Assertion, Evidence, Secrets)</div>
-
-                <p>The verifier can check the proof without accessing the private evidence:</p>
-
-                <div class="math-display">Verify(Assertion, π) → {Accept, Reject}</div>
-
-                <p>This preserves privacy while enabling verifiable trust. For example, an entity can prove they have sufficient reputation without revealing their complete transaction history or the identities of their reviewers.</p>
-              `
-            }
-          ]
+            <p><strong>Global State and Operator:</strong> Let the time-indexed (hyper)graph be G<sub>t</sub> = (V, E<sub>t</sub>), and let the evidence field be E<sub>t</sub> = {e<sub>ij</sub>(t)}<sub>(i,j)∈V×V</sub>. Let Δ<sub>t</sub> denote the collection of new events between t and t + 1. EQBSL defines an update operator:</p>
+            <div class="math-display">F : (E<sub>t</sub>, Δ<sub>t</sub>) ↦ E<sub>t+1</sub></div>
+          `
         },
         {
-          title: '3. Cryptographic Proof Framework',
+          title: '3. Commitments and Statement of Soundness',
           content: `
-            <p>Our framework supports multiple types of trust proofs:</p>
+            <p>The core idea is conceptually simple: commit to state, update according to F, and prove that this update occurred as advertised.</p>
 
+            <p><strong>State Commitments:</strong> At time t the EQBSL state is S<sub>t</sub> = (G<sub>t</sub>, E<sub>t</sub>). A verifier does not need to see S<sub>t</sub>; they only need a binding handle for it. Let C<sub>t</sub> = Com(S<sub>t</sub>; r<sub>t</sub>) be a commitment under some binding, hiding vector commitment scheme Com with randomness r<sub>t</sub>.</p>
+
+            <p><strong>Transition Statement:</strong> Given the EQBSL operator F, the honest update from t to t + 1 is S<sub>t+1</sub> = (G<sub>t+1</sub>, F(E<sub>t</sub>, Δ<sub>t</sub>)). The public statement we want to prove is:</p>
+            
+            <p><em>Given public inputs (C<sub>t</sub>, C<sub>t+1</sub>, Δ<sub>t</sub>), there exist states S<sub>t</sub>, S<sub>t+1</sub> and randomness (r<sub>t</sub>, r<sub>t+1</sub>) such that C<sub>t</sub> = Com(S<sub>t</sub>; r<sub>t</sub>), C<sub>t+1</sub> = Com(S<sub>t+1</sub>; r<sub>t+1</sub>), and S<sub>t+1</sub> = (G<sub>t+1</sub>, F(E<sub>t</sub>, Δ<sub>t</sub>)).</em></p>
+          `
+        },
+        {
+          title: '4. Circuits for F and Ψ',
+          content: `
+            <p>To make the statement above machine-checkable, we compile the EQBSL update into arithmetic circuits or equivalent constraint systems.</p>
+
+            <p><strong>Circuit C<sub>F</sub> for the Evidence Operator:</strong> Define an arithmetic circuit C<sub>F</sub> : (S<sub>t</sub>, Δ<sub>t</sub>) ↦ S<sub>t+1</sub> whose gates implement exactly the EQBSL update rules:</p>
             <ul>
-              <li><strong>Threshold Proofs</strong>: Demonstrate a metric exceeds a threshold</li>
-              <li><strong>Aggregation Proofs</strong>: Show correct combination of multiple trust signals</li>
-              <li><strong>Provenance Proofs</strong>: Trace the origin and chain of custody of trust claims</li>
-              <li><strong>Temporal Proofs</strong>: Establish timing properties (e.g., "reputation has been stable for 6 months")</li>
-              <li><strong>Conditional Proofs</strong>: Demonstrate implications (e.g., "if condition X holds, then trust assertion Y is valid")</li>
+              <li>per-edge and per-hyperedge evidence updates,</li>
+              <li>temporal decay (if any) on components of e<sub>ij</sub>(t),</li>
+              <li>aggregation of hyperedge evidence into pairwise tensors,</li>
+              <li>any domain-specific clamping or normalisation.</li>
             </ul>
 
-            <p>Each proof type is implemented using appropriate cryptographic primitives: range proofs, set membership proofs, signature aggregation, commitment schemes, and zero-knowledge SNARKs or STARKs for complex computations.</p>
-          `,
-          subsections: [
-            {
-              title: '3.1 Proof Composition',
-              content: `
-                <p>A powerful feature of our framework is proof composition: complex trust proofs can be built from simpler components. For example, proving "Entity A is trusted" might involve:</p>
+            <p>The constraint system for C<sub>F</sub> contains, in arithmetised form, the same algebra that defines F; there is no room for a second, "convenient" operator.</p>
 
-                <ol>
-                  <li>Proof that A has high reputation (threshold proof)</li>
-                  <li>Proof that A's reputation comes from diverse sources (aggregation proof)</li>
-                  <li>Proof that A has been active for sufficient time (temporal proof)</li>
-                  <li>Proof that A holds required certifications (membership proof)</li>
-                </ol>
+            <p><strong>Circuit C<sub>Ψ</sub> for Evidence-to-Opinion Mapping:</strong> We define a per-edge circuit C<sub>Ψ</sub> : e<sub>ij</sub>(t) ↦ ω<sub>ij</sub>(t) whose constraints implement:</p>
+            <div class="math-display">r<sub>ij</sub>(t) = φ<sup>+</sup>(e<sub>ij</sub>(t)), &nbsp;&nbsp; s<sub>ij</sub>(t) = φ<sup>−</sup>(e<sub>ij</sub>(t))</div>
+            <div class="math-display">b<sub>ij</sub>(t) = r<sub>ij</sub>(t)/(r<sub>ij</sub>(t) + s<sub>ij</sub>(t) + K)</div>
+            <div class="math-display">d<sub>ij</sub>(t) = s<sub>ij</sub>(t)/(r<sub>ij</sub>(t) + s<sub>ij</sub>(t) + K)</div>
+            <div class="math-display">u<sub>ij</sub>(t) = K/(r<sub>ij</sub>(t) + s<sub>ij</sub>(t) + K)</div>
+            <div class="math-display">b<sub>ij</sub>(t) + d<sub>ij</sub>(t) + u<sub>ij</sub>(t) = 1</div>
 
-                <p>These component proofs are combined using logical operators (AND, OR, threshold) to form a compound proof. The verifier checks the compound proof against the compound assertion, without needing to understand the internal structure.</p>
-              `
-            },
-            {
-              title: '3.2 Recursive Trust',
-              content: `
-                <p>Trust relationships are often transitive: if A trusts B, and B trusts C, then A may have derived trust in C. Proof-carrying trust supports recursive proofs that establish these transitive relationships:</p>
-
-                <div class="math-display">Trust(A → C) = f(Trust(A → B), Trust(B → C))</div>
-
-                <p>where <em>f</em> is a trust fusion function (such as EBSL discounting or other operators). The proof π<sub>AC</sub> demonstrates correct application of <em>f</em> to the constituent trust relationships, without revealing the full trust graph or intermediate assessments.</p>
-
-                <p>This enables trust chains and delegation: a party can delegate trust decisions to intermediaries, and the intermediary provides a proof that their trust assessment is sound. This is particularly useful in federated and hierarchical systems.</p>
-              `
-            }
-          ]
+            <p>In practice, denominators are handled via fixed-point arithmetic and multiplicative constraints rather than literal division, but the algebra is identical.</p>
+          `
         },
         {
-          title: '4. Trust Transitivity and Propagation',
+          title: '5. Circuits for Embeddings Γ',
           content: `
-            <p>Trust propagation in decentralized networks is a fundamental challenge. Proof-carrying trust addresses this through verifiable trust chains:</p>
+            <p>When node-level embeddings are published or used as features, we may wish to prove that they are honest functions of the committed EQBSL state.</p>
 
-            <ul>
-              <li><strong>Direct Trust</strong>: A directly trusts B based on personal interaction (verified through signatures and transaction records)</li>
-              <li><strong>Recommended Trust</strong>: A trusts C because B (whom A trusts) recommends C (verified through cryptographic vouching)</li>
-              <li><strong>Composite Trust</strong>: A trusts D based on multiple indirect paths (verified through aggregated proofs)</li>
-            </ul>
+            <p>Let U<sub>t</sub> = {u<sub>i</sub>(t)}<sub>i∈V</sub> be the embedding set at time t. Define a circuit C<sub>Γ</sub> : S<sub>t</sub> ↦ U<sub>t</sub> whose constraints implement u<sub>i</sub>(t) = Γ(i, E<sub>t</sub>, G<sub>t</sub>) exactly.</p>
 
-            <p>Each trust edge in the network carries a proof of its validity. When computing derived trust, the system collects and verifies all relevant proofs, ensuring that trust decisions are based on valid evidence.</p>
-          `,
-          subsections: [
-            {
-              title: '4.1 Trust Discounting',
-              content: `
-                <p>When trust is transitive, it typically diminishes with distance. If A trusts B with weight w<sub>AB</sub>, and B trusts C with weight w<sub>BC</sub>, then A's derived trust in C is discounted:</p>
+            <p>The details of Γ are domain-specific: it may be a graph neural network, a hand-designed feature map, or a simpler summary. What matters is that the same Γ that appears in specifications is the one whose constraints end up in C<sub>Γ</sub>.</p>
 
-                <div class="math-display">w<sub>AC</sub> = w<sub>AB</sub> · w<sub>BC</sub> · d</div>
+            <p>The public statement then becomes: <em>Given C<sub>t</sub> and a candidate embedding set U<sub>t</sub>, there exists S<sub>t</sub>, r<sub>t</sub> such that C<sub>t</sub> = Com(S<sub>t</sub>; r<sub>t</sub>) and U<sub>t</sub> = C<sub>Γ</sub>(S<sub>t</sub>).</em></p>
 
-                <p>where <em>d</em> is a discounting factor (often &lt; 1). The proof π<sub>AC</sub> demonstrates that this discounting was correctly applied. This prevents trust from being artificially amplified through long chains of recommendations.</p>
-              `
-            },
-            {
-              title: '4.2 Conflict Resolution',
-              content: `
-                <p>When multiple trust paths exist between parties, they may provide conflicting evidence. Our framework uses EBSL to handle conflicts:</p>
-
-                <ul>
-                  <li><strong>Consensus Operator</strong>: Fuses independent opinions into a single assessment</li>
-                  <li><strong>Weighted Aggregation</strong>: Gives more weight to more reliable trust paths</li>
-                  <li><strong>Contradiction Detection</strong>: Identifies and flags inconsistent evidence</li>
-                </ul>
-
-                <p>The proof demonstrates that conflict resolution was performed correctly according to the specified logic. This makes trust decisions auditable and predictable, even in complex networks with contradictory information.</p>
-              `
-            }
-          ]
+            <p>If the system wants to enjoy the authority of "EQBSL embeddings", it must accept the cost of proving it.</p>
+          `
         },
         {
-          title: '5. Implementation Examples',
+          title: '6. Zero-Knowledge Layer',
           content: `
-            <p>We present reference implementations in several domains:</p>
-          `,
-          subsections: [
-            {
-              title: '5.1 Decentralized Marketplace',
-              content: `
-                <p>In a decentralized marketplace without a central authority, buyers and sellers use proof-carrying trust to make transactions safer:</p>
+            <p>All of the above can, in principle, be done with transparent commitments and non-zero-knowledge proofs. In practice, it is often socially and legally necessary to keep raw evidence private, while still providing verifiable guarantees about trust computation.</p>
 
-                <ul>
-                  <li>Sellers prove they have successfully completed many transactions</li>
-                  <li>Buyers prove they have funds available without revealing balances</li>
-                  <li>Escrow agents prove they are bonded and insured</li>
-                  <li>Dispute resolvers prove their expertise and impartiality</li>
-                </ul>
+            <p><strong>Prover and Verifier Views:</strong> The prover knows the full states S<sub>t</sub>, S<sub>t+1</sub>, the randomness r<sub>t</sub>, r<sub>t+1</sub> for commitments, and the complete event set Δ<sub>t</sub>. The verifier sees public inputs (C<sub>t</sub>, C<sub>t+1</sub>, Δ<sub>t</sub><sup>pub</sup>), optional published embeddings U<sub>t</sub>, U<sub>t+1</sub> and/or opinions for selected edges, and a zero-knowledge proof π<sub>t</sub> attesting that the constraints of C<sub>F</sub> (and optionally C<sub>Ψ</sub>, C<sub>Γ</sub>) are satisfied.</p>
 
-                <p>Each proof is verified before the transaction proceeds. This creates a trustless marketplace where participants make informed decisions based on verifiable evidence rather than reputation alone.</p>
-              `
-            },
-            {
-              title: '5.2 Supply Chain Verification',
-              content: `
-                <p>In supply chains, proof-carrying trust enables end-to-end verification:</p>
+            <p>A modern proof system (SNARK, STARK, etc.) provides succinct π<sub>t</sub> and efficient verification. The choice of scheme is a question of engineering, not of algebra.</p>
 
-                <ul>
-                  <li>Manufacturers prove compliance with standards without revealing proprietary processes</li>
-                  <li>Shippers prove chain of custody and proper handling</li>
-                  <li>Distributors prove authenticity of products</li>
-                  <li>Retailers prove ethical sourcing without exposing supplier relationships</li>
-                </ul>
-
-                <p>Each participant in the supply chain adds their proof to the product's provenance record. Consumers can verify the entire chain, ensuring authenticity and ethical practices while respecting business confidentiality.</p>
-              `
-            },
-            {
-              title: '5.3 Federated Identity',
-              content: `
-                <p>In federated identity systems, proof-carrying trust enables portable reputation across domains:</p>
-
-                <ul>
-                  <li>Users prove attributes and credentials without revealing underlying identity</li>
-                  <li>Identity providers prove they verified user information following standards</li>
-                  <li>Relying parties accept proofs instead of re-verifying users</li>
-                  <li>Reputation from one domain is provably transferred to another</li>
-                </ul>
-
-                <p>This enables seamless interaction across organizational boundaries while maintaining privacy and security. Users control their identity proofs and selectively disclose properties as needed for each interaction.</p>
-              `
-            }
-          ]
-        },
-        {
-          title: '6. Security Properties',
-          content: `
-            <p>Proof-carrying trust provides several formal security properties:</p>
-
-            <ul>
-              <li><strong>Soundness</strong>: Invalid trust claims cannot be proven (except with negligible probability)</li>
-              <li><strong>Zero-Knowledge</strong>: Proofs reveal only the claim, not underlying evidence or secrets</li>
-              <li><strong>Non-Transferability</strong>: Proofs can be bound to specific contexts or verifiers</li>
-              <li><strong>Revocability</strong>: Proofs can be made revocable through certificate revocation or time limits</li>
-              <li><strong>Forward Security</strong>: Past proofs remain valid even if current secrets are compromised</li>
-            </ul>
-
-            <p>We provide formal security proofs in the cryptographic game model, showing that these properties hold under standard assumptions (discrete log, random oracle, etc.). Quantum-resistant variants are also available using lattice-based or hash-based primitives.</p>
+            <p><strong>Revelation Policies:</strong> One of the advantages of working in evidence space is granularity. A system can commit to the entire E<sub>t</sub> but only reveal aggregate opinions for a subset of edges, embeddings for a subset of nodes, or coarse-grained statistics for compliance or audit. The proof does not care; it only cares that the revealed pieces are consistent with some hidden whole that obeys the EQBSL operator.</p>
           `
         },
         {
           title: '7. Conclusion',
           content: `
-            <p>Proof-carrying trust represents a paradigm shift in how distributed systems establish trust. By requiring cryptographic proofs to accompany trust claims, we move from subjective, reputation-based trust to objective, verifiable trust.</p>
+            <p>The point of this paper is not to sell yet another proof system. It is to show that once trust is written as evidence flow (EQBSL), the usual excuses for unverifiable behaviour look thin. If you can write down F and Γ, you can arithmetise them. If you can arithmetise them, you can prove you followed them.</p>
 
-            <p>This approach has broad applications: decentralized marketplaces, supply chain transparency, federated identity, secure multi-party computation, and beyond. As cryptographic proof systems become more efficient (through SNARKs, STARKs, and hardware acceleration), proof-carrying trust will become practical for a wider range of applications.</p>
+            <p>There are, of course, costs: circuit size, prover time, and the usual headaches of efficient arithmetisation. But these are honest costs. They make explicit the computational price of epistemic hygiene in a domain that has grown accustomed to free-floating scores.</p>
 
-            <p>Future work includes standardization of proof formats, development of trust policy languages for expressing complex trust requirements, integration with blockchain and distributed ledger technologies, and exploration of quantum-resistant variants. The proof-carrying trust framework provides a foundation for building verifiable trust infrastructure for the next generation of distributed systems.</p>
+            <p>In exchange, one gains a property that "trust oracles" by design never had: the obligation to show their work, or at least a zero-knowledge proof that the work exists.</p>
           `
         }
       ]

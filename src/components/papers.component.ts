@@ -92,8 +92,8 @@ export class PapersComponent {
   papers = [
     {
       id: 'ebsl-zk',
-      title: 'EBSL in ZK Reputation Systems',
-      description: 'Explores the integration of Epistemic Belief State Logic (EBSL) with zero-knowledge proof systems for reputation management. Covers formal verification and privacy-preserving trust mechanisms.',
+      title: 'Evidence-Based Subjective Logic in ZKML Identity Systems',
+      description: 'Formalizes the integration of EBSL into Zero-Knowledge Machine Learning frameworks for decentralised identity. EBSL enables self-sovereign identities to express uncertainty as a first-class cryptographic primitive, allowing trust computations to be both explainable and verifiable without revealing underlying data.',
       filename: 'EBSL in ZK Reputation Systems.pdf',
       size: '178 KB',
       type: 'Research Paper',
@@ -101,8 +101,8 @@ export class PapersComponent {
     },
     {
       id: 'eqbsl-quantum',
-      title: 'EQBSL+ZK: Quantum Extensions',
-      description: 'Presents the Extended Quantum Belief State Logic framework with zero-knowledge integration. Details quantum-resistant protocols and advanced cryptographic constructions for belief state verification.',
+      title: 'EQBSL: Against Trust Scores',
+      description: 'A systems-oriented extension of EBSL that lifts evidence-based trust into structured, vectorised, operator-defined form suitable for dynamic graphs and hypergraphs. Provides stable trust embeddings for downstream machine learning while maintaining clear chain of custody back to evidence.',
       filename: 'EQBSL+ZK.pdf',
       size: '211 KB',
       type: 'Research Paper',
@@ -110,8 +110,8 @@ export class PapersComponent {
     },
     {
       id: 'proof-trust',
-      title: 'Proof-Carrying Trust',
-      description: 'Introduces a novel framework for carrying cryptographic proofs of trust across distributed systems. Combines formal logic with practical implementations for decentralized trust networks.',
+      title: 'Proof-Carrying Trust: Zero-Knowledge Constraints for EQBSL',
+      description: 'Defines circuits and zero-knowledge constraints that force each EQBSL trust update to respect the operator specification without revealing underlying evidence. Closes the gap between EQBSL specification and implementation with cryptographic proofs of correctness.',
       filename: 'Proof-Carrying-Trust.pdf',
       size: '202 KB',
       type: 'Research Paper',
