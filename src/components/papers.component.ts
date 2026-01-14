@@ -1,8 +1,8 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, output, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-docs',
+  selector: 'app-papers',
   standalone: true,
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -10,10 +10,10 @@ import { CommonModule } from '@angular/common';
     <div class="max-w-7xl mx-auto px-4 py-12">
       <div class="text-center mb-12">
         <h1 class="text-4xl font-bold mb-4 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-          Official Documentation
+          Research Papers
         </h1>
         <p class="text-slate-400 text-lg max-w-2xl mx-auto">
-          Explore the research papers and official documentation for EQBSL and related technologies.
+          Explore the research papers for EQBSL and related technologies.
         </p>
       </div>
 
@@ -38,20 +38,18 @@ import { CommonModule } from '@angular/common';
             </div>
             
             <div class="flex gap-2">
-              <a 
-                [href]="paper.viewUrl" 
-                target="_blank"
-                rel="noopener noreferrer"
-                class="flex-1 text-center px-4 py-2 bg-slate-700/50 hover:bg-slate-700 text-slate-200 rounded-lg transition-colors duration-200 text-sm font-medium"
+              <button
+                (click)="viewPaper.emit(paper.id)"
+                class="flex-1 text-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors duration-200 text-sm font-medium"
               >
-                View
-              </a>
+                Read Paper
+              </button>
               <a 
                 [href]="paper.downloadUrl" 
                 download
-                class="flex-1 text-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors duration-200 text-sm font-medium"
+                class="flex-1 text-center px-4 py-2 bg-slate-700/50 hover:bg-slate-700 text-slate-200 rounded-lg transition-colors duration-200 text-sm font-medium"
               >
-                Download
+                Download PDF
               </a>
             </div>
           </div>
@@ -88,33 +86,35 @@ import { CommonModule } from '@angular/common';
     }
   `]
 })
-export class DocsComponent {
+export class PapersComponent {
+  viewPaper = output<string>();
+  
   papers = [
     {
+      id: 'ebsl-zk',
       title: 'EBSL in ZK Reputation Systems',
       description: 'Explores the integration of Epistemic Belief State Logic (EBSL) with zero-knowledge proof systems for reputation management. Covers formal verification and privacy-preserving trust mechanisms.',
       filename: 'EBSL in ZK Reputation Systems.pdf',
       size: '178 KB',
       type: 'Research Paper',
-      viewUrl: 'https://github.com/Steake/EQBSL/blob/main/Papers/EBSL%20in%20ZK%20Reputation%20Systems.pdf',
       downloadUrl: 'https://raw.githubusercontent.com/Steake/EQBSL/main/Papers/EBSL%20in%20ZK%20Reputation%20Systems.pdf'
     },
     {
+      id: 'eqbsl-quantum',
       title: 'EQBSL+ZK: Quantum Extensions',
       description: 'Presents the Extended Quantum Belief State Logic framework with zero-knowledge integration. Details quantum-resistant protocols and advanced cryptographic constructions for belief state verification.',
       filename: 'EQBSL+ZK.pdf',
       size: '211 KB',
       type: 'Research Paper',
-      viewUrl: 'https://github.com/Steake/EQBSL/blob/main/Papers/EQBSL%2BZK.pdf',
       downloadUrl: 'https://raw.githubusercontent.com/Steake/EQBSL/main/Papers/EQBSL%2BZK.pdf'
     },
     {
+      id: 'proof-trust',
       title: 'Proof-Carrying Trust',
       description: 'Introduces a novel framework for carrying cryptographic proofs of trust across distributed systems. Combines formal logic with practical implementations for decentralized trust networks.',
       filename: 'Proof-Carrying-Trust.pdf',
       size: '202 KB',
       type: 'Research Paper',
-      viewUrl: 'https://github.com/Steake/EQBSL/blob/main/Papers/Proof-Carrying-Trust.pdf',
       downloadUrl: 'https://raw.githubusercontent.com/Steake/EQBSL/main/Papers/Proof-Carrying-Trust.pdf'
     }
   ];

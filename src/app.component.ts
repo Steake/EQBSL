@@ -5,7 +5,8 @@ import { EbslPlaygroundComponent } from './components/ebsl-playground.component'
 import { EqbslGraphComponent } from './components/eqbsl-graph.component';
 import { ZkDemoComponent } from './components/zk-demo.component';
 import { CathexisComponent } from './components/cathexis.component';
-import { DocsComponent } from './components/docs.component';
+import { PapersComponent } from './components/papers.component';
+import { PaperDetailComponent } from './components/paper-detail.component';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +18,8 @@ import { DocsComponent } from './components/docs.component';
     EqbslGraphComponent,
     ZkDemoComponent,
     CathexisComponent,
-    DocsComponent
+    PapersComponent,
+    PaperDetailComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -25,7 +27,7 @@ import { DocsComponent } from './components/docs.component';
       <app-nav 
         [tabs]="tabs" 
         [activeTab]="activeTab()" 
-        (onSelect)="activeTab.set($event)"
+        (onSelect)="handleTabSelect($event)"
       />
       
       <main class="animate-in fade-in duration-500">
@@ -35,7 +37,13 @@ import { DocsComponent } from './components/docs.component';
           @case ('eqbsl') { <app-eqbsl-graph /> }
           @case ('zk') { <app-zk-demo /> }
           @case ('cathexis') { <app-cathexis /> }
-          @case ('docs') { <app-docs /> }
+          @case ('papers') { <app-papers (viewPaper)="viewPaper($event)" /> }
+          @case ('paper-detail') { 
+            <app-paper-detail 
+              [paperId]="selectedPaper()" 
+              (back)="handleTabSelect('papers')" 
+            /> 
+          }
         }
       </main>
 
@@ -47,6 +55,7 @@ import { DocsComponent } from './components/docs.component';
 })
 export class AppComponent {
   activeTab = signal('intro');
+  selectedPaper = signal('');
   
   tabs = [
     { id: 'intro', label: 'Overview' },
@@ -54,6 +63,19 @@ export class AppComponent {
     { id: 'eqbsl', label: 'EQBSL Graph' },
     { id: 'zk', label: 'ZK Proofs' },
     { id: 'cathexis', label: 'Cathexis Handles' },
-    { id: 'docs', label: 'Documentation' }
+    { id: 'papers', label: 'Papers' }
   ];
+
+  handleTabSelect(tabId: string): void {
+    this.activeTab.set(tabId);
+    if (tabId !== 'paper-detail') {
+      this.selectedPaper.set('');
+    }
+  }
+
+  viewPaper(paperId: string): void {
+    this.selectedPaper.set(paperId);
+    this.activeTab.set('paper-detail');
+  }
 }
+// Update SHA is: d59c9f00b8d1887bae9407b4cb4ad7835b67e633
