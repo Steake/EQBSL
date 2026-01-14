@@ -18,6 +18,21 @@ Built with Angular 21 and TypeScript, this tool transforms complex cryptographic
 
 ---
 
+## 🎬 Video Explainer
+
+Watch this comprehensive introduction to understand how EQBSL revolutionizes trust and reputation systems through mathematically-grounded, privacy-preserving approaches:
+
+https://github.com/user-attachments/assets/Verifiable_Epistemic_Trust.mp4
+
+This video covers:
+- The fundamental limitations of traditional trust scores
+- How Evidence-Based Subjective Logic (EBSL) models uncertainty
+- Zero-knowledge proofs for privacy-preserving trust verification
+- Quantum-resistant extensions for future-proof security
+- Real-world applications in decentralized identity and reputation systems
+
+---
+
 ## 📖 What is EQBSL?
 
 **EQBSL (Evidence-based Quantum-resistant Belief State Logic)** is a mathematical framework for reasoning about trust, reputation, and epistemic uncertainty in distributed systems. Unlike traditional trust scores (e.g., "85% trusted"), EQBSL models the full epistemic state:

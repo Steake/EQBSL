@@ -15,6 +15,28 @@ import { Component, ChangeDetectionStrategy, output } from '@angular/core';
         </p>
       </header>
 
+      <!-- Video Explainer Section -->
+      <div class="mb-16">
+        <h2 class="text-2xl font-bold text-white mb-4 text-center">Introduction to EQBSL</h2>
+        <p class="text-slate-400 text-center mb-6 max-w-2xl mx-auto">
+          Watch this comprehensive introduction to understand how EQBSL revolutionizes trust and reputation systems through mathematically-grounded, privacy-preserving approaches.
+        </p>
+        <div class="relative aspect-video rounded-xl overflow-hidden shadow-2xl border border-slate-700">
+          <video 
+            class="w-full h-full" 
+            controls 
+            preload="metadata"
+            poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'%3E%3Crect width='1280' height='720' fill='%231e293b'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui' font-size='48' fill='%2394a3b8'%3EVerifiable Epistemic Trust%3C/text%3E%3C/svg%3E"
+          >
+            <source src="/Verifiable_Epistemic_Trust.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+        <p class="text-sm text-slate-500 mt-4 text-center">
+          This video covers the fundamental limitations of traditional trust scores, EBSL's uncertainty modeling, zero-knowledge proofs, quantum-resistant extensions, and real-world applications.
+        </p>
+      </div>
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
         <div class="group relative p-6 bg-slate-800/50 rounded-xl border border-slate-700 hover:border-indigo-500/50 transition-all cursor-pointer" (click)="navigate.emit('ebsl')">
           <div class="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl opacity-0 group-hover:opacity-20 transition duration-500 blur"></div>
