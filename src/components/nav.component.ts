@@ -38,7 +38,7 @@ import { CommonModule } from '@angular/common';
             <button
               (click)="mobileMenuOpen.set(!mobileMenuOpen())"
               class="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
-              aria-expanded="false"
+              [attr.aria-expanded]="mobileMenuOpen()"
             >
               <span class="sr-only">Open main menu</span>
               <!-- Hamburger icon -->
@@ -63,9 +63,14 @@ import { CommonModule } from '@angular/common';
             @for (tab of tabs(); track tab.id) {
               <button
                 (click)="handleMobileSelect(tab.id)"
-                [class]="activeTab() === tab.id 
-                  ? 'bg-slate-800 text-white block w-full text-left px-3 py-2 rounded-md text-base font-medium border border-slate-700 transition-all'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800 block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-all'"
+                class="block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-all"
+                [class.bg-slate-800]="activeTab() === tab.id"
+                [class.text-white]="activeTab() === tab.id"
+                [class.border]="activeTab() === tab.id"
+                [class.border-slate-700]="activeTab() === tab.id"
+                [class.text-slate-400]="activeTab() !== tab.id"
+                [class.hover:text-white]="activeTab() !== tab.id"
+                [class.hover:bg-slate-800]="activeTab() !== tab.id"
               >
                 {{ tab.label }}
               </button>
