@@ -40,7 +40,7 @@ import { CommonModule } from '@angular/common';
               class="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
               [attr.aria-expanded]="mobileMenuOpen()"
             >
-              <span class="sr-only">Open main menu</span>
+              <span class="sr-only">{{ mobileMenuOpen() ? 'Close main menu' : 'Open main menu' }}</span>
               <!-- Hamburger icon -->
               @if (!mobileMenuOpen()) {
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -63,14 +63,11 @@ import { CommonModule } from '@angular/common';
             @for (tab of tabs(); track tab.id) {
               <button
                 (click)="handleMobileSelect(tab.id)"
-                class="block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-all"
-                [class.bg-slate-800]="activeTab() === tab.id"
-                [class.text-white]="activeTab() === tab.id"
-                [class.border]="activeTab() === tab.id"
-                [class.border-slate-700]="activeTab() === tab.id"
-                [class.text-slate-400]="activeTab() !== tab.id"
-                [class.hover:text-white]="activeTab() !== tab.id"
-                [class.hover:bg-slate-800]="activeTab() !== tab.id"
+                [ngClass]="{
+                  'bg-slate-800 text-white border border-slate-700': activeTab() === tab.id,
+                  'text-slate-400 hover:text-white hover:bg-slate-800': activeTab() !== tab.id,
+                  'block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-all': true
+                }"
               >
                 {{ tab.label }}
               </button>
