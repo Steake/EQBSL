@@ -6,6 +6,8 @@
 
 **EQBSL Explorer** is an interactive web application for experimenting with mathematically-grounded trust systems and verifiable epistemic reasoning. This project provides hands-on tools to explore:
 
+https://eqbsl-demo.netlify.app/
+
 - **Evidence-Based Subjective Logic (EBSL)** – Move beyond binary trust scores to model uncertainty using evidence tuples (r, s, u)
 - **Zero-Knowledge EBSL (ZK-EBSL)** – Privacy-preserving trust computations using zero-knowledge proofs
 - **EQBSL** – Quantum-resistant extensions for distributed identity and reputation systems
