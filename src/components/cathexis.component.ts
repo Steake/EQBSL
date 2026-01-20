@@ -24,7 +24,7 @@ import { EbslService } from '../services/ebsl.service';
           <div class="space-y-6">
             <div>
               <label class="block text-sm text-slate-400 mb-2">Simulate Network Activity</label>
-              <div class="flex gap-2">
+              <div class="grid grid-cols-2 gap-2">
                  <button (click)="setProfile('new')" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded text-sm transition-colors">New User</button>
                  <button (click)="setProfile('good')" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded text-sm transition-colors">Power User</button>
                  <button (click)="setProfile('bad')" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded text-sm transition-colors">Sybil/Bot</button>
