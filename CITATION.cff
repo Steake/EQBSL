@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+title: EQBSL
+type: software
+authors:
+  - given-names: Oliver C.
+    family-names: Hirst
+    alias: Steake
+abstract: "EQBSL treats trust as a ledgered state: typed evidence vectors live on edges and hyperedges; a declared operator updates them over time with decay, attribution, and (optionally) transitive aggregation; opinions are derived from evidence via the EBSL mapping; embeddings are derived from opinion/evidence statistics as the primary ML interface."
+license: MIT
+url: https://github.com/Steake/EQBSL
+references:
+  - type: book
+    authors:
+      - given-names: Audun
+        family-names: Jøsang
+    title: Subjective Logic
+    year: 2016
+    publisher:
+      name: Springer
+  - type: article
+    authors:
+      - given-names: Boris
+        family-names: Škorić
+      - name: et al.
+    title: "Flow-based reputation with uncertainty: evidence-based subjective logic"
+    year: 2014
+    url: https://arxiv.org/abs/1402.3319
