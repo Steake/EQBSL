@@ -7,19 +7,20 @@ evidence, hypergraph trust structures, and embedding-based identity
 representations. The upstream theory is described in the EBSL paper:
 <https://arxiv.org/abs/1402.3319>
 
-For a primer on the concepts used in this project, see
-[`docs/EQBSL-Primer.md`](docs/EQBSL-Primer.md).
+For a primer on the concepts used in this project, see the
+[project README](README.md), which includes an overview of key ideas
+and references.
 
 ## Areas where contributions are welcome
 
 - **Simulation tooling** – scripts or notebooks that exercise the
   trust-computation pipeline end-to-end
-- **Fusion and discounting operators** – additional or alternative
-  combination rules beyond the current cumulative/averaging fusion
+- **Fusion and discounting operators** – design and implementation
+  of opinion-combination rules for fusion and discounting
 - **ONNX / EZKL integration** – exporting models or proofs to
   standard inference and zero-knowledge formats
 - **Documentation improvements** – corrections, examples, or
-  expanded explanations in `docs/`
+  expanded explanations in `README.md` or `Papers/`
 
 ## How to contribute
 
