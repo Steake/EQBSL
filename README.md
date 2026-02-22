@@ -1,8 +1,15 @@
 # EQBSL Explorer
 
-[![License](https://img.shields.io/badge/license-Research-blue.svg)](https://github.com/Steake/EQBSL)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Angular](https://img.shields.io/badge/Angular-21.0-DD0031?logo=angular)](https://angular.io)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript)](https://www.typescriptlang.org/)
+
+## Documentation
+
+- [EQBSL Primer — core objects, state model, operator semantics, and embedding interface](docs/EQBSL-Primer.md)
+- [Applied showcase: ZK-gated reputation airdrops using EQBSL](https://github.com/Steake/Reputation-Gated-Airdrop)
+
+---
 
 **EQBSL Explorer** is an interactive web application for experimenting with mathematically-grounded trust systems and verifiable epistemic reasoning. This project provides hands-on tools to explore:
 
