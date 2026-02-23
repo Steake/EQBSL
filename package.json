@@ -3,6 +3,22 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "keywords": [
+    "subjective-logic",
+    "evidence-based-subjective-logic",
+    "ebsl",
+    "eqbsl",
+    "trust-computation",
+    "reputation-system",
+    "opinion-model",
+    "dempster-shafer",
+    "web-of-trust",
+    "sybil-resistance",
+    "zero-knowledge",
+    "trust-network",
+    "belief-uncertainty",
+    "typescript"
+  ],
   "scripts": {
     "dev": "ng serve",
     "build": "ng build --configuration=production",

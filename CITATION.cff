@@ -8,6 +8,13 @@ authors:
 abstract: "EQBSL treats trust as a ledgered state: typed evidence vectors live on edges and hyperedges; a declared operator updates them over time with decay, attribution, and (optionally) transitive aggregation; opinions are derived from evidence via the EBSL mapping; embeddings are derived from opinion/evidence statistics as the primary ML interface."
 license: MIT
 url: https://github.com/Steake/EQBSL
+keywords:
+  - subjective-logic
+  - evidence-based-subjective-logic
+  - trust-computation
+  - reputation-system
+  - zero-knowledge-proofs
+  - web-of-trust
 references:
   - type: book
     authors:
