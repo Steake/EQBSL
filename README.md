@@ -339,6 +339,23 @@ Contributions are welcome! This is an active research project. If you'd like to 
 
 ---
 
+## 🌐 Related Projects & Ecosystem
+
+EQBSL is part of a growing ecosystem of Subjective Logic implementations:
+
+| Project | Language | Description |
+|---------|----------|-------------|
+| [liamzebedee/retrust](https://github.com/liamzebedee/retrust) | JS/Python | Subjective consensus algorithm with EBSL and sybil control |
+| [waleedqk/subjective-logic](https://github.com/waleedqk/subjective-logic) | Python | Pure subjective logic library with binomial opinions and fusion |
+| [atenearesearchgroup/uncertainty-datatypes-python](https://github.com/atenearesearchgroup/uncertainty-datatypes-python) | Python | Academic SL implementation from University of Málaga |
+| [nharan/TrustSystem](https://github.com/nharan/TrustSystem) | Rust/JS | Trust/reputation system on Bluesky using subjective logic |
+| [jemsbhai/jsonld-ex](https://github.com/jemsbhai/jsonld-ex) | TypeScript | JSON-LD extensions with subjective logic confidence algebra |
+| [BraveNewCapital/ebsl-go](https://pkg.go.dev/github.com/BraveNewCapital/ebsl-go) | Go | EBSL implementation in Go |
+
+See also: [Subjective Logic on GitHub](https://github.com/topics/subjective-logic) · [Trust Computation on GitHub](https://github.com/topics/trust-computation) · [Sybil Resistance on GitHub](https://github.com/topics/sybil-resistance)
+
+---
+
 ## 📄 License
 
 This project is part of ongoing research by O. C. Hirst [Steake] & Shadowgraph Labs (2025). See the repository for license details.
