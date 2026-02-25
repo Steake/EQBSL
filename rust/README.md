@@ -318,19 +318,19 @@ In a decentralized autonomous organization, members vote on proposals. Rather th
 graph LR
     subgraph Members
         A["Alice\n b=0.91, u=0.09\n (veteran, high trust)"]
-        B["Bob\n b=0.62, u=0.38\n (active, moderate trust)"]
-        C["Carol\n b=0.17, u=0.83\n (new member, high uncertainty)"]
+        B["Bob\n b=0.62, u=0.25\n (active, moderate trust)"]
+        C["Carol\n b=0.33, u=0.67\n (new member, high uncertainty)"]
     end
 
     subgraph Proposal["Proposal: Upgrade Protocol"]
         V["Reputation-Weighted Vote\n weight = b × (1 - u)"]
     end
 
-    A -->|"weight = 0.82"| V
-    B -->|"weight = 0.38"| V
-    C -->|"weight = 0.03"| V
+    A -->|"weight = 0.83"| V
+    B -->|"weight = 0.47"| V
+    C -->|"weight = 0.11"| V
 
-    V --> R["Result: Passed\n Weighted majority: 0.74"]
+    V --> R["Result: Passed\n (all members favor)"]
 
     style A fill:#d4edda,stroke:#28a745,color:#000000
     style C fill:#fff3cd,stroke:#ffc107,color:#000000
@@ -345,9 +345,9 @@ struct Member { name: String, opinion: Opinion }
 fn dao_voting_example() {
     // Opinions derived from on-chain interaction history
     let members = vec![
-        Member { name: "alice".into(), opinion: calculate_opinion(100.0, 5.0, 2.0, 0.5) },
-        Member { name: "bob".into(),   opinion: calculate_opinion(30.0,  3.0, 2.0, 0.5) },
-        Member { name: "carol".into(), opinion: calculate_opinion(2.0,   0.0, 2.0, 0.5) },
+        Member { name: "alice".into(), opinion: calculate_opinion(20.0, 0.0, 2.0, 0.5) },
+        Member { name: "bob".into(),   opinion: calculate_opinion(5.0,  1.0, 2.0, 0.5) },
+        Member { name: "carol".into(), opinion: calculate_opinion(1.0,  0.0, 2.0, 0.5) },
     ];
 
     // Vote weight: belief × certainty (1 - uncertainty)
@@ -365,7 +365,9 @@ fn dao_voting_example() {
             100.0 * weight / total_weight);
     }
 
-    // Fuse all member opinions to get consensus
+    // Fuse all member opinions to get the DAO's collective reputation state.
+    // This consensus opinion represents how much the group as a whole is trusted
+    // by an outside observer, not the vote outcome itself.
     let consensus = members.iter().skip(1).fold(members[0].opinion, |acc, m| acc.fuse(&m.opinion));
     println!("Consensus opinion: b={:.3}, u={:.3}, E={:.3}",
         consensus.b, consensus.u, consensus.expectation());
@@ -389,7 +391,7 @@ graph TD
     end
 
     A1 -->|"r=12, s=1\n b=0.80"| A2
-    A1 -->|"r=2, s=8\n d=0.61"| A3
+    A1 -->|"r=2, s=8\n d=0.67"| A3
     A1 -->|"r=0, s=0\n u=1.0"| A4
 
     subgraph Decision
@@ -421,7 +423,10 @@ fn ai_swarm_trust_example() {
 
     let mut state = State::new(100); // t=100 (current step)
 
-    // Coordinator's evidence about peers
+    // Coordinator's evidence about peers.
+    // NOTE: The diagram above uses simplified scalar (r, s) counts for illustration.
+    // The actual computation uses 3-channel weighted evidence vectors, so the
+    // numeric opinion values produced by the code will differ from the diagram labels.
     state.edges.insert(("coord".into(), "agent_2".into()), array![12.0, 8.0, 10.0]);
     state.edges.insert(("coord".into(), "agent_3".into()), array![2.0, 9.0, 1.0]);
     state.edges.insert(("coord".into(), "agent_4".into()), array![0.0, 0.0, 0.0]);
@@ -430,7 +435,7 @@ fn ai_swarm_trust_example() {
     let mut h = std::collections::HashMap::new();
     h.insert("agent_2".to_string(), "executor".to_string());
     h.insert("agent_3".to_string(), "executor".to_string());
-    state.hypers.insert("task_42".into(), eqbsl::model::Hyperedge {
+    state.hypers.insert("task_42".into(), Hyperedge {
         hid: "task_42".into(),
         nodes: vec!["agent_2".into(), "agent_3".into()],
         roles: h,
@@ -479,8 +484,8 @@ sequenceDiagram
     P->>P: Compute ω_credit = calculate_opinion(r=8, s=1, k=2, a=0.5)
     Note over P: b=0.73, d=0.09, u=0.18, E=0.82
 
-    P->>L1: Publish anonymised opinion commitment
-    P->>L2: Publish anonymised opinion commitment
+    P->>L1: Publish anonymized opinion commitment
+    P->>L2: Publish anonymized opinion commitment
 
     L1->>L1: Direct evidence: r=5, s=0 → ω₁=(0.71,0,0.29,0.5)
     L2->>L2: Direct evidence: r=3, s=1 → ω₂=(0.50,0.17,0.33,0.5)
@@ -546,13 +551,15 @@ cargo test -- --nocapture
 | Feature | Traditional Score | Web-of-Trust | EQBSL |
 |:--------|:-----------------|:-------------|:------|
 | Representation | Scalar (e.g., 4.2 ★) | Boolean | **Tuple (b, d, u, a)** |
-| Uncertainty modelling | ✗ | ✗ | **✓ Explicit via `u`** |
+| Uncertainty modeling | ✗ | ✗ | **✓ Explicit via `u`** |
 | Evidence dimensionality | Scalar | None | **m-dimensional tensors** |
 | Transitivity | Proprietary | Manual chains | **Formal Discounting ⊗** |
 | Multi-witness fusion | Weighted avg | None | **Algebraic Consensus ⊕** |
 | Temporal decay | Ad-hoc | None | **Per-channel β^Δt** |
-| Sybil resistance | KYC | Introducer trust | **Epistemic uncertainty** |
+| Sybil resistance | KYC | Introducer trust | **Partial† (via uncertainty)** |
 | Serializable / portable | Partial | ✗ | **✓ Full serde support** |
+
+† EQBSL does not itself provide Sybil resistance; it computes trust (opinions) over observed events. Its explicit modeling of epistemic uncertainty about new or unknown identities can inform downstream Sybil-resistance policies, but it is not a Sybil-resistance mechanism on its own.
 
 ---
 
