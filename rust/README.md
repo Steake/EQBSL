@@ -93,12 +93,12 @@ graph TD
         EMB --> APP["Downstream Applications\n Access Control · ML · Governance"]
     end
 
-    style Input fill:#f0f4ff,stroke:#6699cc
-    style Evidence fill:#fff4e0,stroke:#cc9900
-    style Decay fill:#fff0f0,stroke:#cc6666
-    style Opinion fill:#f0fff0,stroke:#66cc66
-    style Propagation fill:#f8f0ff,stroke:#9966cc
-    style Output fill:#e8f8ff,stroke:#3399cc
+    style Input stroke:#6699cc
+    style Evidence stroke:#cc9900
+    style Decay stroke:#cc6666
+    style Opinion stroke:#66cc66
+    style Propagation stroke:#9966cc
+    style Output stroke:#3399cc
 ```
 
 ### Transitive Trust (Discounting)
@@ -111,9 +111,9 @@ graph LR
     B -->|"ω_BC\n b=0.71, u=0.29"| C
     A -.->|"ω_AC = ω_AB ⊗ ω_BC\n b=0.59, u=0.41"| C
 
-    style A fill:#d4edda,stroke:#28a745
-    style B fill:#fff3cd,stroke:#ffc107
-    style C fill:#d1ecf1,stroke:#17a2b8
+    style A fill:#d4edda,stroke:#28a745,color:#000000
+    style B fill:#fff3cd,stroke:#ffc107,color:#000000
+    style C fill:#d1ecf1,stroke:#17a2b8,color:#000000
 ```
 
 *Note:* Uncertainty increases through each hop — a natural property of transitive inference.
@@ -129,8 +129,8 @@ graph TD
     W3["Witness 3\n ω₃ = (0.63, 0.08, 0.29, 0.5)"] --> F
     F --> R["High-confidence result\n E(ω) = 0.91, u = 0.17"]
 
-    style F fill:#d4edda,stroke:#28a745
-    style R fill:#d1ecf1,stroke:#17a2b8
+    style F fill:#d4edda,stroke:#28a745,color:#000000
+    style R fill:#d1ecf1,stroke:#17a2b8,color:#000000
 ```
 
 ---
@@ -332,9 +332,9 @@ graph LR
 
     V --> R["Result: Passed\n Weighted majority: 0.74"]
 
-    style A fill:#d4edda,stroke:#28a745
-    style C fill:#fff3cd,stroke:#ffc107
-    style R fill:#d1ecf1,stroke:#17a2b8
+    style A fill:#d4edda,stroke:#28a745,color:#000000
+    style C fill:#fff3cd,stroke:#ffc107,color:#000000
+    style R fill:#d1ecf1,stroke:#17a2b8,color:#000000
 ```
 
 ```rust
@@ -400,9 +400,9 @@ graph TD
     A3 -->|"E=0.19 ✗\n Quarantined"| D
     A4 -->|"E=0.50 ?\n Probation"| D
 
-    style A3 fill:#f8d7da,stroke:#dc3545
-    style A2 fill:#d4edda,stroke:#28a745
-    style A4 fill:#fff3cd,stroke:#ffc107
+    style A3 fill:#f8d7da,stroke:#dc3545,color:#000000
+    style A2 fill:#d4edda,stroke:#28a745,color:#000000
+    style A4 fill:#fff3cd,stroke:#ffc107,color:#000000
 ```
 
 ```rust
