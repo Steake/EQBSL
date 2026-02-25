@@ -4,357 +4,448 @@
 [![Angular](https://img.shields.io/badge/Angular-21.0-DD0031?logo=angular)](https://angular.io)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 
-**EQBSL Explorer** is an interactive web application for experimenting with mathematically-grounded trust systems and verifiable epistemic reasoning. This project provides hands-on tools to explore:
+**EQBSL Explorer** is an interactive web application for experimenting with mathematically-grounded trust systems and verifiable epistemic reasoning.
 
-https://eqbsl-demo.netlify.app/
+Live demo: https://eqbsl-demo.netlify.app/
 
-- **Evidence-Based Subjective Logic (EBSL)** – Move beyond binary trust scores to model uncertainty using evidence tuples (r, s, u)
-- **Zero-Knowledge EBSL (ZK-EBSL)** – Privacy-preserving trust computations using zero-knowledge proofs
-- **EQBSL** – Quantum-resistant extensions for distributed identity and reputation systems
-- **Cathexis** – Emotional/motivational trust dynamics
+It provides hands-on tools for:
 
-Built with Angular 21 and TypeScript, this tool transforms complex cryptographic and epistemic concepts into intuitive, visual experiences.
+- **Evidence-Based Subjective Logic (EBSL)**: represent trust as evidence and uncertainty, not just a scalar score
+- **ZK-EBSL / Proof-Carrying Trust**: prove trust updates follow rules without revealing private evidence
+- **EQBSL graph reasoning**: model trust as dynamic network interactions with decay and adversarial actors
+- **Cathexis labeling**: convert quantitative trust states into human-readable semantic labels
+
+Built with Angular 21 + TypeScript, the project makes trust, reputation, and epistemic uncertainty explorable in a visual interface.
 
 > **Repository:** [`Steake/EQBSL`](https://github.com/Steake/EQBSL)  
 > **App metadata:** [`metadata.json`](./metadata.json)
 
 ---
 
-## 🎬 Video Explainer
+## What EQBSL Solves
 
-Watch this comprehensive introduction to understand how EQBSL revolutionizes trust and reputation systems through mathematically-grounded, privacy-preserving approaches:
+Most reputation systems collapse rich trust states into one number (for example, `4.7/5`). That loses key information:
+
+- how much evidence exists (`2 reviews` vs `20,000 reviews`)
+- whether evidence is conflicting
+- whether trust is stale
+- whether a verifier can validate trust updates without seeing private data
+
+EQBSL (Evidence-based Quantum-resistant Belief State Logic) models the epistemic state directly:
+
+- **Belief (`b`)**: evidence supporting a proposition
+- **Disbelief (`d`)**: evidence against a proposition
+- **Uncertainty (`u`)**: absence of evidence
+- with the constraint `b + d + u = 1`
+
+### Core EBSL mapping used in this repo
+
+The `EbslService` computes opinions from evidence (`r`, `s`) using the standard demo parameter `K = 2`:
+
+- `b = r / (r + s + 2)`
+- `d = s / (r + s + 2)`
+- `u = 2 / (r + s + 2)`
+- `E(w) = b + a*u` (expected probability, with base rate `a`, default `0.5`)
+
+This is implemented in [`src/services/ebsl.service.ts`](./src/services/ebsl.service.ts).
+
+---
+
+## System Overview (Actual App Components)
+
+The app is organized into standalone Angular components selected from a tabbed shell in [`src/app.component.ts`](./src/app.component.ts).
+
+### High-level architecture
+
+```mermaid
+flowchart LR
+  APP[App Shell\napp.component.ts] --> NAV[Navigation\nnav.component.ts]
+  APP --> INTRO[Overview / Intro]
+  APP --> EBSLPLAY[EBSL Playground]
+  APP --> GRAPH[EQBSL Graph]
+  APP --> ZK[ZK Demo]
+  APP --> CATHEXIS[Cathexis]
+  APP --> PAPERS[Papers + Paper Detail]
+
+  EBSLPLAY --> SVC[EBSL Service\nebsl.service.ts]
+  GRAPH --> SVC
+  CATHEXIS --> SVC
+
+  GRAPH --> GEMINI[Gemini API (Optional)\nAI Handle Generation]
+  ZK --> COMMIT[Commitment + Proof UI]
+  CATHEXIS --> LABELS[Human-readable Trust Labels]
+```
+
+### Trust data lifecycle in the graph simulation
+
+The graph visualizer in [`src/components/eqbsl-graph.component.ts`](./src/components/eqbsl-graph.component.ts) simulates autonomous actors, edge evidence growth, and trust decay.
+
+```mermaid
+flowchart TD
+  STEP[Simulation Step] --> PICK[Pick source node]
+  PICK --> MODE{Network density}
+  MODE -->|Sparse| DISC[Discovery mode\nprefer same-role peers]
+  MODE -->|Dense| EBSLMODE[EBSL mode\nexploit vs explore]
+  DISC --> TARGET[Select target]
+  EBSLMODE --> TARGET
+  TARGET --> TX[Execute transaction]
+  TX --> OUTCOME{Success? based on target reliability}
+  OUTCOME -->|Yes| INC_R[Increment edge r]
+  OUTCOME -->|No| INC_S[Increment edge s]
+  INC_R --> OP[Recompute opinion / expectation]
+  INC_S --> OP
+  OP --> UI[Update edge width/color/opacity\nUpdate node stats + labels]
+  UI --> DECAY[Background decay loop]
+  DECAY --> STEP
+```
+
+### Privacy-preserving trust flow (demo pattern)
+
+The ZK demo in [`src/components/zk-demo.component.ts`](./src/components/zk-demo.component.ts) demonstrates the prover/verifier interaction model.
+
+```mermaid
+sequenceDiagram
+  participant Prover
+  participant Commit as Commitment State
+  participant Verifier
+  participant Public as Public Trust View
+
+  Prover->>Prover: Add private evidence (+r or +s)
+  Prover->>Commit: Update commitment C_t
+  Prover->>Prover: Generate proof pi_t (demo simulation)
+  Prover->>Verifier: Send C_t and pi_t
+  Verifier->>Verifier: Check update constraints
+  Verifier-->>Public: Accept proof
+  Public-->>Public: Refresh visible trust score/projection
+```
+
+---
+
+## Key Features (What You Can Do in the UI)
+
+### 1. EBSL Logic Calculator
+
+[`src/components/ebsl-playground.component.ts`](./src/components/ebsl-playground.component.ts)
+
+- Adjust positive evidence `r` and negative evidence `s`
+- Observe belief/disbelief/uncertainty bars update in real time
+- See expected probability `E(w)` computed from the opinion tuple
+- Visualize why uncertainty decays only with accumulated evidence
+
+### 2. EQBSL Graph Visualizer
+
+[`src/components/eqbsl-graph.component.ts`](./src/components/eqbsl-graph.component.ts)
+
+- Simulate multi-actor trust networks with autonomous interactions
+- Model roles (`Validator`, `Trader`, `Observer`, `Sybil`)
+- Tune hidden reliability and observe behavioral divergence
+- Inspect incoming/outgoing evidence per node
+- Watch stale trust relationships decay over time
+- Generate AI-based semantic handles (optional API key)
+
+### 3. Proof-Carrying Trust (ZK Demo)
+
+[`src/components/zk-demo.component.ts`](./src/components/zk-demo.component.ts)
+
+- Simulate private evidence updates
+- Produce a commitment/proof pair (demo UX)
+- Verify rule-conformance without exposing raw evidence
+- Understand the separation between private state and public trust view
+
+### 4. Cathexis Trust Labels
+
+[`src/components/cathexis.component.ts`](./src/components/cathexis.component.ts)
+
+- Map trust vectors to human-readable labels
+- Preview reputation semantics for new, reliable, mixed, and malicious actors
+- Demonstrate operator-friendly explainability for trust tensors
+
+---
+
+## Real-World Use Cases
+
+### Use-case matrix
+
+| Domain | Example Deployment | Why EQBSL Helps | Relevant App Modules |
+|---|---|---|---|
+| Decentralized identity (DID/SSI) | Verifier decides whether to trust an issuer under sparse history | Distinguishes “unknown” from “bad”; supports privacy-preserving checks | EBSL + ZK + Cathexis |
+| Marketplaces | Vendor/reviewer reputation with fraud resistance | Models evidence volume, conflict, and decay; reduces rating inflation | EBSL + Graph |
+| Validator/staking networks | Delegator chooses validators under uncertainty | Captures reliability and uncertainty, not only uptime averages | Graph + EBSL |
+| Supply chain provenance | Trust in suppliers, certifiers, transport checkpoints | Handles missing/conflicting evidence and auditability requirements | EBSL + ZK |
+| AI agents / tool orchestration | Gate agent actions based on trust in tools/peers | Supports uncertainty-aware routing and policy thresholds | EBSL + Cathexis |
+| Moderation / trust & safety | Prioritize reports and actor reviews | Avoids overreacting to low-evidence events; supports analyst triage | Graph + Cathexis |
+| Compliance-heavy workflows | Prove policy-compliant trust updates without PII disclosure | Separates public verification from private evidence | ZK demo pattern |
+
+### Example examples (worked scenarios)
+
+#### Example 1: New identity vs bad identity (same score problem)
+
+A scalar system might give both actors a low/neutral score for different reasons. EQBSL separates them.
+
+| Actor | Evidence `(r,s)` | Opinion `(b,d,u)` using K=2 | Interpretation |
+|---|---:|---|---|
+| New issuer | `(0,0)` | `(0.00, 0.00, 1.00)` | Unknown, no evidence |
+| Risky issuer | `(0,8)` | `(0.00, 0.80, 0.20)` | Strong evidence against |
+
+This difference is operationally critical for identity onboarding and fraud review.
+
+#### Example 2: Marketplace seller trust thresholding
+
+A policy engine can use both expected trust and uncertainty:
+
+- `Allow fast checkout` if `E(w) >= 0.80` and `u <= 0.20`
+- `Require manual review` if `0.55 <= E(w) < 0.80` or `u > 0.20`
+- `Throttle / quarantine` if `E(w) < 0.55` with sufficient evidence
+
+Worked values with `a = 0.5`:
+
+| Seller | `(r,s)` | `b` | `d` | `u` | `E(w)` | Decision |
+|---|---:|---:|---:|---:|---:|---|
+| A | `(18,2)` | `0.818` | `0.091` | `0.091` | `0.864` | Allow fast checkout |
+| B | `(4,1)` | `0.571` | `0.143` | `0.286` | `0.714` | Manual review |
+| C | `(2,9)` | `0.154` | `0.692` | `0.154` | `0.231` | Throttle/quarantine |
+
+#### Example 3: Validator selection under uncertainty
+
+Two validators can have similar raw uptime percentages but different evidence volumes.
+
+| Validator | Observed evidence | Trust implication |
+|---|---|---|
+| `V1` | `r=9, s=1` | Good performance, moderate confidence |
+| `V2` | `r=900, s=100` | Similar ratio, much lower uncertainty and stronger basis for delegation |
+
+EQBSL makes this distinction explicit instead of hiding it in a single percentage.
+
+#### Example 4: Privacy-preserving compliance attestation
+
+A verifier needs to know whether a trust update followed policy, but not the underlying transaction details.
+
+- Prover maintains private evidence history
+- Prover publishes updated commitment `C_t`
+- Prover submits proof `π_t` that update rule `F(E_t, Δ_t)` was followed
+- Verifier checks proof and accepts public trust projection
+
+This is the model illustrated in the ZK demo component.
+
+---
+
+## Why This Matters in Production Systems
+
+### Compared to scalar reputation scores
+
+| Capability | Scalar Score | EQBSL-style Opinion Model |
+|---|---|---|
+| Represents uncertainty directly | No | Yes (`u`) |
+| Distinguishes new vs bad actor | Often no | Yes |
+| Supports evidence count reasoning | Weak | Native (`r`,`s`) |
+| Supports trust decay semantics | Usually custom add-on | Fits naturally in temporal updates |
+| Supports privacy-preserving verification patterns | Rare | Designed for integration with ZK workflows |
+| Human explainability | Superficial labels | Quantitative + semantic labels (Cathexis) |
+
+### Practical adoption path
+
+1. Start with EBSL-only scoring for one workflow (e.g., vendor risk).
+2. Add uncertainty-aware policy thresholds (`E(w)` + `u`).
+3. Add graph-level evidence aggregation and decay.
+4. Add semantic labels for analyst UX.
+5. Add proof-carrying trust for regulated/high-sensitivity flows.
+
+---
+
+## Video Explainer
+
+Watch the full introduction:
 
 <video src="./Verifiable_Epistemic_Trust.mp4" controls width="100%"></video>
 
-This video covers:
-- The fundamental limitations of traditional trust scores
-- How Evidence-Based Subjective Logic (EBSL) models uncertainty
-- Zero-knowledge proofs for privacy-preserving trust verification
-- Quantum-resistant extensions for future-proof security
-- Real-world applications in decentralized identity and reputation systems
+The video covers:
+
+- limitations of traditional trust scores
+- EBSL uncertainty modeling
+- zero-knowledge trust verification concepts
+- quantum-resistant extensions
+- real-world applications for identity and reputation systems
 
 ---
 
-## 📖 What is EQBSL?
+## Research Basis
 
-**EQBSL (Evidence-based Quantum-resistant Belief State Logic)** is a mathematical framework for reasoning about trust, reputation, and epistemic uncertainty in distributed systems. Unlike traditional trust scores (e.g., "85% trusted"), EQBSL models the full epistemic state:
+The `Papers/` directory contains the current research papers used to ground this implementation:
 
-- **Belief (b)** – Evidence supporting a proposition
-- **Disbelief (d)** – Evidence against a proposition  
-- **Uncertainty (u)** – Absence of evidence (where b + d + u = 1)
+- **EBSL in ZK Reputation Systems** (`Papers/EBSL in ZK Reputation Systems.pdf`)
+- **EQBSL+ZK** (`Papers/EQBSL+ZK.pdf`)
+- **Proof-Carrying-Trust** (`Papers/Proof-Carrying-Trust.pdf`)
 
-### Why EQBSL Matters
+The in-app papers browser is implemented in:
 
-Traditional reputation systems collapse complex trust relationships into a single number, losing critical information about:
-- **How much evidence** supports the rating (2 reviews vs. 2000 reviews)
-- **Uncertainty** when data is sparse or conflicting
-- **Privacy** when revealing trust judgments
-- **Quantum resistance** for future-proof cryptographic security
-
-### Key Innovations
-
-1. **Evidence-Based Reasoning (EBSL)**  
-   Trust opinions are computed from evidence tuples (r, s) representing positive and negative observations. This enables mathematically rigorous:
-   - Trust transitivity (A trusts B, B trusts C → A's opinion of C)
-   - Opinion fusion from multiple sources
-   - Uncertainty quantification
-
-2. **Zero-Knowledge Proofs (ZK-EBSL)**  
-   Prove trust properties without revealing:
-   - The exact trust values
-   - The evidence supporting them
-   - The identities involved  
-   
-   Example: "I can prove this vendor has >80% trust from 50+ verified buyers, without revealing who those buyers are."
-
-3. **Quantum Resistance (EQBSL)**  
-   Built on post-quantum cryptographic primitives to ensure trust systems remain secure against quantum computers, protecting:
-   - Long-term reputation data
-   - Privacy-preserving proofs
-   - Identity attestations
-
-4. **Cathexis Integration**  
-   Models emotional/motivational dimensions of trust:
-   - Approach/avoidance dynamics
-   - Trust decay over time
-   - Context-dependent trust relationships
-
-### Real-World Applications
-
-- **Decentralized Identity**: Web-of-trust without centralized authorities
-- **Reputation Systems**: Marketplaces, social networks, peer review
-- **Secure Voting**: Verifiable ballot privacy with trust in validators
-- **Supply Chain**: Track product authenticity with uncertainty modeling
-- **AI Safety**: Quantify and verify trust in AI agent behaviors
+- [`src/components/papers.component.ts`](./src/components/papers.component.ts)
+- [`src/components/paper-detail.component.ts`](./src/components/paper-detail.component.ts)
 
 ---
 
-## 🎯 What Can You Do?
-
-- **EBSL Logic Calculator** – Experiment with belief/disbelief/uncertainty operations
-- **EQBSL Graph Visualizer** – Model trust networks with AI-assisted node identity generation
-- **Zero-Knowledge Demos** – Explore privacy-preserving trust proofs
-- **Cathexis Simulator** – Understand emotional dynamics in trust relationships
-
----
-
-## 🔬 Research Papers
-
-This implementation is grounded in rigorous academic research. The `Papers/` directory contains:
-
-- **EBSL in ZK Reputation Systems** – Foundations of zero-knowledge trust proofs
-- **EQBSL+ZK** – Quantum-resistant extensions to EBSL
-- **Proof-Carrying-Trust** – Verifiable trust computations
-
-For formal definitions, proofs, and protocol specifications, explore these papers and the broader [`EQBSL`](https://github.com/Steake/EQBSL) repository.
-
----
-
-## 🛠️ Technology Stack
-
-- **Angular 21** – Modern reactive framework with zoneless change detection
-- **TypeScript 5.8** – Type-safe development
-- **RxJS** – Reactive data flows and state management
-- **Tailwind CSS** – Utility-first styling for responsive UI
-- **Google Generative AI** – AI-assisted trust model exploration
-- **Angular CLI** – Build tooling and development server
-
----
-
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-- **Node.js** 18+ (LTS recommended) – [Download here](https://nodejs.org/)
+- **Node.js** 18+ (LTS recommended)
 - **npm** (bundled with Node.js)
-- **(Optional)** Google Generative AI API key – For AI-assisted features
+- **Optional:** Google Generative AI API key for AI-generated handles in the graph visualizer
 
-### Installation
-
-1. **Clone the repository:**
+### Install
 
 ```bash
 git clone https://github.com/Steake/EQBSL.git
 cd EQBSL
-```
-
-2. **Install dependencies:**
-
-```bash
 npm install
 ```
 
-### Configuration (Optional)
+### Run locally
 
-For AI-assisted network identity generation, configure your Google Generative AI API key:
+```bash
+npm run dev
+```
 
-1. Get an API key from [Google AI Studio](https://aistudio.google.com/)
-2. Set the environment variable before running the app:
+Then open the local URL shown by Angular CLI (typically `http://localhost:4200`).
+
+### Optional: enable AI handle generation
+
+Unix/macOS:
 
 ```bash
 export API_KEY="your-api-key-here"
 npm run dev
 ```
 
-Or on Windows:
+Windows (cmd):
 
 ```cmd
 set API_KEY=your-api-key-here
 npm run dev
 ```
 
-> **Note:** The app works without an API key, but AI features in the EQBSL Graph component will be disabled.
+If no API key is set, the app still works; only AI identity generation in the EQBSL graph is disabled.
 
-### Development Server
-
-Start the local development server with live reload:
-
-```bash
-npm run dev
-```
-
-The app will be available at `http://localhost:4200` (or the next available port). Open this URL in your browser to start exploring!
-
-### Production Build
-
-Create an optimized production build:
+### Build and preview
 
 ```bash
 npm run build
-```
-
-This compiles the app with optimizations enabled. Output is placed in `./dist/` as configured in [`angular.json`](./angular.json).
-
-### Production Preview
-
-Test the production build locally:
-
-```bash
 npm run preview
 ```
 
-This serves the app using production configuration (equivalent to `ng serve --configuration=production`).
-
 ---
 
-## 📁 Project Structure
+## Project Structure
 
-```
+```text
 EQBSL/
 ├── Papers/                    # Research papers (PDFs)
 ├── src/
-│   ├── app.component.ts       # Main Angular app component
-│   ├── components/            # Feature components
-│   │   ├── intro.component.ts
-│   │   ├── ebsl-playground.component.ts
-│   │   ├── eqbsl-graph.component.ts
-│   │   ├── zk-demo.component.ts
-│   │   └── cathexis.component.ts
-│   └── services/              # Shared services
+│   ├── app.component.ts       # Main Angular app shell and tab routing
+│   ├── services/
+│   │   └── ebsl.service.ts    # EBSL opinion calculations + Cathexis label rules
+│   └── components/
+│       ├── intro.component.ts
+│       ├── nav.component.ts
+│       ├── ebsl-playground.component.ts
+│       ├── eqbsl-graph.component.ts
+│       ├── zk-demo.component.ts
+│       ├── cathexis.component.ts
+│       ├── papers.component.ts
+│       └── paper-detail.component.ts
+├── index.tsx                  # TS bootstrap entry
 ├── index.html                 # HTML entry point
-├── index.tsx                  # TypeScript bootstrap file
-├── angular.json               # Angular CLI configuration
+├── angular.json               # Angular CLI config
 ├── package.json               # Dependencies and scripts
-├── tsconfig.json              # TypeScript configuration
-└── metadata.json              # App metadata
+├── metadata.json              # App metadata
+└── Verifiable_Epistemic_Trust.mp4
 ```
 
 ---
 
-## 📜 Available Scripts
-
-The following npm scripts are defined in `package.json`:
+## Available Scripts
 
 | Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server with live reload |
-| `npm run build` | Create optimized production build |
-| `npm run preview` | Serve app with production configuration |
+|---|---|
+| `npm run dev` | Start Angular development server |
+| `npm run build` | Production build |
+| `npm run preview` | Serve with production configuration |
 
 ---
 
-## 🔧 Troubleshooting
+## Technology Stack
 
-### Port Already in Use
+- **Angular 21** (standalone components, signals)
+- **TypeScript 5.x**
+- **RxJS**
+- **Tailwind CSS**
+- **Google Generative AI (`@google/genai`)** for optional handle generation
+- **KaTeX** (used in paper-detail presentation styles)
 
-If port 4200 is already in use, Angular will automatically try the next available port. Check your terminal output for the exact URL.
+---
 
-### API Key Issues
+## Current Limitations (Important)
 
-If AI features aren't working:
+This repository is an interactive explorer and research demo, not a production trust engine yet.
 
-1. Verify your API key is set correctly: `echo $API_KEY` (Unix) or `echo %API_KEY%` (Windows)
-2. Ensure you have credits available in your Google AI Studio account
-3. Check the browser console for error messages
+| Area | Current State |
+|---|---|
+| Opinion fusion | `fuseOpinions()` is currently a placeholder in `EbslService` |
+| ZK proofs | `zk-demo` simulates proof generation/verification UX, not real cryptographic proofs |
+| Persistence | Graph state is in-memory only |
+| Adversarial realism | Reliability-based behavior is simplified for demonstration |
 
-### Build Errors
+If you plan to build on this for production use, prioritize: fusion implementation, persistence, policy engine, and real ZK circuits/verifier services.
 
-If you encounter build errors after updating dependencies:
+---
+
+## Troubleshooting
+
+### Port already in use
+
+Angular will usually try the next available port. Use the URL shown in terminal output.
+
+### API key issues (AI handles)
+
+- Verify the environment variable is set (`echo $API_KEY` or `echo %API_KEY%`)
+- Confirm your Google AI Studio account has access/credits
+- Check browser console errors
+
+### Build issues after dependency updates
 
 ```bash
 rm -rf node_modules package-lock.json
 npm install
 ```
 
-### TypeScript Errors
+### TypeScript version mismatch in IDE
 
-The project uses TypeScript 5.8. Ensure your IDE is using the workspace TypeScript version:
+Use the workspace TypeScript version.
 
-- **VS Code**: `Ctrl/Cmd + Shift + P` → "TypeScript: Select TypeScript Version" → "Use Workspace Version"
-
----
-
-## 🧪 Interactive Components
-
-### EBSL Logic
-
-Experiment with subjective logic operations:
-- **Belief (b)**, **Disbelief (d)**, **Uncertainty (u)** triplets
-- Evidence-based reasoning with positive (r) and negative (s) observations
-- Logical operators: conjunction, disjunction, discount, consensus
-
-### EQBSL Graph
-
-Visualize trust networks:
-- Create nodes with roles and reliability metrics
-- Establish trust relationships between entities
-- AI-generated identity profiles for realistic scenarios
-- Real-time trust propagation calculations
-
-### ZK Demo
-
-Explore zero-knowledge proofs:
-- Privacy-preserving trust verification
-- Commitment schemes for EBSL opinions
-- Proof generation and verification
-
-### Cathexis
-
-Model emotional trust dynamics:
-- Approach/avoidance motivations
-- Trust decay and reinforcement
-- Emotional state transitions
+- VS Code: `Ctrl/Cmd + Shift + P` -> `TypeScript: Select TypeScript Version` -> `Use Workspace Version`
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-Contributions are welcome! This is an active research project. If you'd like to contribute:
+Contributions are welcome. This is an active research project.
 
-1. **Fork the repository**
-2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
-3. **Commit your changes** (`git commit -m 'Add amazing feature'`)
-4. **Push to the branch** (`git push origin feature/amazing-feature`)
-5. **Open a Pull Request**
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/my-change`)
+3. Commit your changes
+4. Push the branch
+5. Open a pull request
 
-### Development Guidelines
+Development guidelines:
 
-- Follow the existing code style (TypeScript + Angular conventions)
-- Use Angular signals for state management
-- Keep components standalone when possible
-- Write clear commit messages
-
----
-
-## 📚 Learn More
-
-### Documentation
-
-- [Angular Documentation](https://angular.dev/)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-- [Tailwind CSS](https://tailwindcss.com/docs)
-- [RxJS Guide](https://rxjs.dev/guide/overview)
-
-### Research
-
-- Browse the `Papers/` directory for academic foundations
-- Visit the main [EQBSL repository](https://github.com/Steake/EQBSL) for protocol specifications
+- Follow Angular + TypeScript conventions used in the repo
+- Prefer standalone components
+- Use Angular signals for local reactive state where appropriate
+- Keep trust logic changes documented with examples/tests where possible
 
 ---
 
-## 📄 License
+## Contact / Support
 
-This project is part of ongoing research by O. C. Hirst [Steake] & Shadowgraph Labs (2025). See the repository for license details.
+- **GitHub Issues:** [github.com/Steake/EQBSL/issues](https://github.com/Steake/EQBSL/issues)
+- **Repository:** [github.com/Steake/EQBSL](https://github.com/Steake/EQBSL)
 
----
-
-## 🙏 Acknowledgments
-
-- Based on research in subjective logic, zero-knowledge proofs, and quantum-resistant cryptography
-- Built with modern web technologies for accessible epistemic reasoning
-- Special thanks to the Angular, TypeScript, and open-source communities
-
----
-
-## 📧 Contact & Support
-
-For questions, suggestions, or collaboration opportunities:
-
-- **GitHub Issues**: [github.com/Steake/EQBSL/issues](https://github.com/Steake/EQBSL/issues)
-- **Repository**: [github.com/Steake/EQBSL](https://github.com/Steake/EQBSL)
-
----
-
-<p align="center">
-  <strong>Made with ❤️ for the future of verifiable trust</strong>
-</p>
