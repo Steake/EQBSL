@@ -73,7 +73,7 @@ import { CommonModule } from '@angular/common';
             <div class="w-8 h-8 rounded bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white">
               E
             </div>
-            <span class="font-bold text-lg tracking-tight">ZK-EBSL <span class="text-slate-500 font-normal">Explorer</span></span>
+            <span class="font-bold text-lg tracking-tight">EQBSL <span class="text-slate-500 font-normal">Explorer</span></span>
           </div>
           
           <!-- Desktop Navigation -->

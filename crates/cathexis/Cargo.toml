@@ -1,0 +1,13 @@
+[package]
+name = "cathexis"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "CATHEXIS trust-handle layer for EQBSL/EBSL networks"
+repository = "https://github.com/Steake/EQBSL"
+readme = "README.md"
+keywords = ["trust", "reputation", "eqbsl", "ebsl", "categorization"]
+categories = ["algorithms", "data-structures"]
+
+[dependencies]
+

@@ -1,5 +1,6 @@
-import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { EbslService } from '../services/ebsl.service';
 
 @Component({
   selector: 'app-zk-demo',
@@ -106,6 +107,7 @@ import { CommonModule } from '@angular/common';
   `
 })
 export class ZkDemoComponent {
+  ebsl = inject(EbslService);
   privateR = signal(0);
   privateS = signal(0);
   isGenerating = signal(false);
@@ -136,11 +138,8 @@ export class ZkDemoComponent {
       // Calculate score based on EBSL logic (simple expectation for display)
       const r = this.privateR();
       const s = this.privateS();
-      const b = r / (r + s + 2);
-      const u = 2 / (r + s + 2);
-      const score = b + 0.5 * u;
-      
-      this.publicScore.set(score);
+      const op = this.ebsl.calculateOpinion(r, s, 0.5);
+      this.publicScore.set(this.ebsl.expectedProbability(op));
     }, 1500);
   }
 }
