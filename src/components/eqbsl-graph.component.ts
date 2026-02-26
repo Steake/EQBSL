@@ -3,6 +3,7 @@ import { Component, signal, computed, ChangeDetectionStrategy, inject, OnDestroy
 import { CommonModule } from '@angular/common';
 import { GoogleGenAI, Type } from "@google/genai";
 import { EbslService } from '../services/ebsl.service';
+import { CathexisService } from '../services/cathexis.service';
 
 interface Node {
   id: string;
@@ -606,6 +607,7 @@ interface LogEntry {
 })
 export class EqbslGraphComponent implements OnInit, OnDestroy {
   ebsl = inject(EbslService);
+  cathexis = inject(CathexisService);
   
   // UI State
   selectedNodeId = signal<string | null>(null);
@@ -1230,7 +1232,7 @@ export class EqbslGraphComponent implements OnInit, OnDestroy {
 
   getEffectiveLabel(node: Node) {
     const stats = this.getNodeStats(node.id);
-    const standard = this.ebsl.getCathexisLabel(stats.r, stats.s);
+    const standard = this.cathexis.getHeuristicHandle(stats.r, stats.s);
     if (node.customHandle) {
       return { ...standard, handle: node.customHandle, gloss: node.customGloss || standard.gloss };
     }
@@ -1270,7 +1272,7 @@ export class EqbslGraphComponent implements OnInit, OnDestroy {
   
   getNodeCathexisLabel(id: string) {
     const s = this.getNodeStats(id);
-    return this.ebsl.getCathexisLabel(s.r, s.s);
+    return this.cathexis.getHeuristicHandle(s.r, s.s);
   }
   
   getNodeCathexisColor(id: string): string {
