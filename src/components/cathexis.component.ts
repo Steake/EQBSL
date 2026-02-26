@@ -282,32 +282,33 @@ interface CategorySummaryView {
           <div class="bg-slate-800/30 border border-slate-700 rounded-2xl p-6">
             <h3 class="text-lg font-bold text-white mb-3">3. CATHEXIS Usage (Rust Crate / Pipeline)</h3>
             <p class="text-sm text-slate-400 mb-4">
-              The implemented `cathexis` crate mirrors the yellowpaper pipeline: build features, run a categoriser,
+              The implemented <code class="font-mono text-indigo-300">cathexis</code> crate mirrors the yellowpaper pipeline: build features, run a categoriser,
               summarise categories, refresh labels, then query an agent handle online.
             </p>
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
               <div class="bg-slate-900 border border-slate-800 rounded-lg p-4">
                 <div class="text-xs uppercase tracking-wider text-slate-500 font-bold mb-2">Offline Batch</div>
-                <pre class="text-xs text-slate-300 overflow-x-auto"><code>let batch = engine.run_batch(BatchInput {
+                <pre class="text-xs text-slate-300 overflow-x-auto"><code>let batch = engine.run_batch(BatchInput &#123;
   snapshot_time: 42,
   graph: &graph,
   eqbsl: &eqbsl,
-})?;
+&#125;)?;
 
 engine.refresh_labels(&batch, &mut provider);</code></pre>
               </div>
               <div class="bg-slate-900 border border-slate-800 rounded-lg p-4">
                 <div class="text-xs uppercase tracking-wider text-slate-500 font-bold mb-2">Online Query</div>
-                <pre class="text-xs text-slate-300 overflow-x-auto"><code>let out = engine.query_agent_handle(QueryInput {
+                <pre class="text-xs text-slate-300 overflow-x-auto"><code>let out = engine.query_agent_handle(QueryInput &#123;
   now: 42,
   agent_id: "alice",
   graph: &graph,
   eqbsl: &eqbsl,
-})?;</code></pre>
+&#125;)?;</code></pre>
               </div>
             </div>
             <div class="mt-4 p-4 rounded-lg bg-indigo-900/20 border border-indigo-500/30 text-sm text-indigo-100/80">
-              This UI demo uses a prototype-based categoriser for interpretability, but the crate supports the MLP baseline (`fθ`) and pluggable feature extractors / label providers.
+              This UI demo uses a prototype-based categoriser for interpretability, but the crate supports the MLP baseline
+              (<code class="font-mono text-indigo-200">fθ</code>) and pluggable feature extractors / label providers.
             </div>
           </div>
         </div>
