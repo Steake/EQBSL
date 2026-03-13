@@ -69,8 +69,13 @@ impl Opinion {
         let b = (self.b * gamma_a + other.b * gamma_b) / denom;
         let d = (self.d * gamma_a + other.d * gamma_b) / denom;
         let u = (self.u * other.u) / denom;
-        let a = (self.a * gamma_a + other.a * gamma_b)
-            / (gamma_a + gamma_b - self.u * other.u * (self.a + other.a));
+        // Base rate denominator; falls back to simple average when zero.
+        let a_denom = gamma_a + gamma_b - self.u * other.u * (self.a + other.a);
+        let a = if a_denom.abs() < f64::EPSILON {
+            (self.a + other.a) / 2.0
+        } else {
+            (self.a * gamma_a + other.a * gamma_b) / a_denom
+        };
         // Re-clamp to [0,1] to absorb floating-point drift
         Opinion {
             b: b.clamp(0.0, 1.0),

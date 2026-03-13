@@ -93,7 +93,7 @@ where
         })
     }
 
-    fn build_category_summary(&self, category_id: usize, features: &[FeatureState]) -> CategorySummary {
+    fn build_category_summary(&self, category_id: usize, _features: &[FeatureState]) -> CategorySummary {
         // In a real implementation, this would compute means, deviations, etc.
         // It would also track drift in \mu_k(t) and membership to decide when to split, merge, or re-label categories (Section 5).
         // For now, return a placeholder summary.

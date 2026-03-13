@@ -17,7 +17,7 @@ pub struct Opinion {
 impl Opinion {
     /// Creates a new opinion, ensuring the constraint b + d + u = 1 (approx).
     pub fn new(b: f64, d: f64, u: f64, a: f64) -> Result<Self, String> {
-        if (b + d + u - 1.0).abs() > 1e-6 {
+        if (b + d + u - 1.0).abs() > 1e-9 {
             return Err(format!("Invalid opinion: b+d+u must be 1, got {}", b + d + u));
         }
         Ok(Self { b, d, u, a })
@@ -52,14 +52,23 @@ pub struct Evidence {
 }
 
 impl Evidence {
-    pub fn new(r: f64, s: f64, k: f64) -> Self {
-        Self { r, s, k }
+    /// Construct evidence, returning an error for invalid inputs (r < 0, s < 0, or k ≤ 0).
+    pub fn new(r: f64, s: f64, k: f64) -> Result<Self, String> {
+        if r < 0.0 || s < 0.0 || k <= 0.0 {
+            return Err(format!(
+                "Invalid evidence: r={r}, s={s}, k={k}. r and s must be ≥ 0, k must be > 0"
+            ));
+        }
+        Ok(Self { r, s, k })
+    }
+
+    /// Convenience constructor for standard EBSL with K = 2.
+    pub fn binary(r: f64, s: f64) -> Result<Self, String> {
+        Self::new(r, s, 2.0)
     }
 
     /// Maps evidence to a Subjective Logic opinion (Equation 3).
-    /// b = r / (r + s + K)
-    /// d = s / (r + s + K)
-    /// u = K / (r + s + K)
+    /// b = r / (r + s + K), d = s / (r + s + K), u = K / (r + s + K)
     pub fn to_opinion(&self, base_rate: f64) -> Opinion {
         let sum = self.r + self.s + self.k;
         let b = self.r / sum;
@@ -70,9 +79,8 @@ impl Evidence {
     }
     
     /// Combine with another evidence (additive property).
+    /// In EBSL, evidence is additive: (r, s) + (r', s') = (r+r', s+s').
     pub fn combine(&self, other: &Evidence) -> Evidence {
-        // Assuming K should match, or we take self's K. 
-        // In EBSL, evidence is additive: (r, s) + (r', s') = (r+r', s+s')
         Evidence {
             r: self.r + other.r,
             s: self.s + other.s,
@@ -88,7 +96,7 @@ mod tests {
 
     #[test]
     fn test_evidence_to_opinion() {
-        let e = Evidence::new(8.0, 2.0, 2.0); // r=8, s=2, K=2 (total=12)
+        let e = Evidence::new(8.0, 2.0, 2.0).unwrap(); // r=8, s=2, K=2 (total=12)
         let op = e.to_opinion(0.5);
         
         // b = 8/12 = 2/3 = 0.666...
@@ -99,5 +107,17 @@ mod tests {
         assert_relative_eq!(op.d, 1.0/6.0);
         assert_relative_eq!(op.u, 1.0/6.0);
         assert_relative_eq!(op.b + op.d + op.u, 1.0);
+    }
+
+    #[test]
+    fn test_evidence_new_rejects_invalid() {
+        assert!(Evidence::new(-1.0, 2.0, 2.0).is_err());
+        assert!(Evidence::new(1.0, -1.0, 2.0).is_err());
+        assert!(Evidence::new(1.0, 2.0, 0.0).is_err());
+    }
+
+    #[test]
+    fn test_opinion_new_rejects_invalid_sum() {
+        assert!(Opinion::new(0.5, 0.3, 0.3, 0.5).is_err());
     }
 }

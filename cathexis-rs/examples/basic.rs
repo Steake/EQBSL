@@ -1,10 +1,9 @@
-use cathexis::categoriser::{MLPCategoriser, Categoriser};
+use cathexis::categoriser::MLPCategoriser;
 use cathexis::eqbsl::{TrustGraph, TrustEmbedding};
 use cathexis::features::{FeatureState, TrustFeatures, GraphFeatures, BehaviouralFeatures};
 use cathexis::labeling::{LabelingModel, LabelInfo, CategorySummary};
 use cathexis::pipeline::CathexisPipeline;
 use ndarray::{Array1, Array2};
-use std::collections::HashMap;
 
 // Mock implementation of TrustGraph
 struct MockGraph {
