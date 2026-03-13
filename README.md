@@ -17,7 +17,7 @@ https://eqbsl-demo.netlify.app/
 
 - **Evidence-Based Subjective Logic (EBSL)** – Move beyond binary trust scores to model uncertainty using evidence tuples (r, s, u)
 - **Zero-Knowledge EBSL (ZK-EBSL)** – Privacy-preserving trust computations using zero-knowledge proofs
-- **EQBSL** – Quantum-resistant extensions for distributed identity and reputation systems
+- **EQBSL (Evidence-Qualified Subjective Logic)** – Extensions for distributed identity and reputation systems with explicit uncertainty modeling
 - **Cathexis** – Emotional/motivational trust dynamics
 
 Built with Angular 21 and TypeScript, this tool transforms complex cryptographic and epistemic concepts into intuitive, visual experiences.
@@ -44,7 +44,7 @@ This video covers:
 
 ## 📖 What is EQBSL?
 
-**EQBSL (Evidence-based Quantum-resistant Belief State Logic)** is a mathematical framework for reasoning about trust, reputation, and epistemic uncertainty in distributed systems. Unlike traditional trust scores (e.g., "85% trusted"), EQBSL models the full epistemic state:
+**EQBSL (Evidence-Qualified Subjective Logic)** is a mathematical framework for reasoning about trust, reputation, and epistemic uncertainty in distributed systems. Unlike traditional trust scores (e.g., "85% trusted"), EQBSL models the full epistemic state:
 
 - **Belief (b)** – Evidence supporting a proposition
 - **Disbelief (d)** – Evidence against a proposition  
@@ -114,6 +114,54 @@ This implementation is grounded in rigorous academic research. The `Papers/` dir
 - **Proof-Carrying-Trust** – Verifiable trust computations
 
 For formal definitions, proofs, and protocol specifications, explore these papers and the broader [`EQBSL`](https://github.com/Steake/EQBSL) repository.
+
+---
+
+## 🦀 Rust Crate
+
+A native Rust implementation of the EQBSL library is available in the [`rust/`](./rust/) directory. It provides the full EQBSL computational pipeline — from raw evidence to verifiable trust embeddings — as a standalone crate suitable for backend services, CLI tools, or embedding in other Rust projects.
+
+### Features
+
+- **Opinion Tuple** `(b, d, u, a)` with Consensus `⊕` and Discounting `⊗` operators
+- **Evidence-to-Opinion mapping** via `calculate_opinion(r, s, k, a)`
+- **m-dimensional evidence tensors** per relationship
+- **Temporal decay** (`β^Δt` per channel), **hyperedge attribution**, and **transitive propagation**
+- **Node trust embeddings** for downstream ML tasks
+- **Full `serde` support** for JSON serialization
+
+### Installation
+
+Add to your `Cargo.toml`:
+
+```toml
+[dependencies]
+eqbsl = { path = "rust" }
+ndarray = "0.15"
+```
+
+### Quick Start
+
+```rust
+use eqbsl::*;
+
+// Map evidence to an opinion (10 positive, 0 negative, K=2, base rate=0.5)
+let op = calculate_opinion(10.0, 0.0, DEFAULT_K, 0.5);
+println!("b={:.3}, u={:.3}, E={:.3}", op.b, op.u, op.expectation());
+// → b=0.833, u=0.167, E=0.917
+
+// Transitive trust: A trusts C via B
+let op_ab = calculate_opinion(10.0, 0.0, DEFAULT_K, 0.5);
+let op_bc = calculate_opinion(5.0, 0.0, DEFAULT_K, 0.5);
+let op_ac = op_ab.discount(&op_bc);
+
+// Fuse two independent witnesses
+let op_w = calculate_opinion(8.0, 1.0, DEFAULT_K, 0.5);
+let fused = op_ac.fuse(&op_w);
+println!("Fused E={:.3}", fused.expectation());
+```
+
+For complete documentation, architecture diagrams, and real-world examples (supply chain provenance, DAO voting, AI agent swarm trust, P2P lending), see [`rust/README.md`](./rust/README.md).
 
 ---
 
@@ -208,6 +256,12 @@ This serves the app using production configuration (equivalent to `ng serve --co
 
 ```
 EQBSL/
+├── rust/                      # Rust crate — native EQBSL library
+│   ├── src/                   # Library source (opinion, ebsl, model, embedding)
+│   ├── examples/              # Runnable examples
+│   ├── tests/                 # Integration & BDD tests
+│   ├── Cargo.toml
+│   └── README.md              # Full Rust crate documentation
 ├── Papers/                    # Research papers (PDFs)
 ├── src/
 │   ├── app.component.ts       # Main Angular app component
@@ -345,6 +399,7 @@ EQBSL is part of a growing ecosystem of Subjective Logic implementations:
 
 | Project | Language | Description |
 |---------|----------|-------------|
+| **[rust/ (this repo)](./rust/)** | **Rust** | **Native EQBSL crate — opinions, decay, propagation, embeddings** |
 | [liamzebedee/retrust](https://github.com/liamzebedee/retrust) | JS/Python | Subjective consensus algorithm with EBSL and sybil control |
 | [waleedqk/subjective-logic](https://github.com/waleedqk/subjective-logic) | Python | Pure subjective logic library with binomial opinions and fusion |
 | [atenearesearchgroup/uncertainty-datatypes-python](https://github.com/atenearesearchgroup/uncertainty-datatypes-python) | Python | Academic SL implementation from University of Málaga |
