@@ -206,7 +206,7 @@ pub struct Opinion { pub b: f64, pub d: f64, pub u: f64, pub a: f64 }
 
 ### `calculate_opinion(r, s, k, a) -> Opinion`
 
-Maps raw evidence counts to an opinion. Uses `K = DEFAULT_K = 2.0` by default.
+Maps raw evidence counts to an opinion. Pass `DEFAULT_K` (= 2.0) for the standard EBSL prior weight.
 
 ### `Params`
 
@@ -274,9 +274,9 @@ fn supply_chain_example() {
         witness_top_k: 5,
     };
 
-    let mut state = State::new(0);
+    params.validate().expect("Invalid params");
 
-    // Manufacturer → Distributor: 5 quality checks passed, 2 on-time deliveries
+    let mut state = State::new(0);
     state.edges.insert(
         ("manufacturer".into(), "distributor".into()),
         array![5.0, 2.0],
@@ -301,7 +301,7 @@ fn supply_chain_example() {
     // Transitive trust: manufacturer → retailer via distributor
     let nodes = vec!["manufacturer".to_string(), "distributor".to_string(), "retailer".to_string()];
     let propagated = depth1_propagation_rs(&nodes, &opinions, &state.edges, &params);
-    let (r, s) = propagated[&("manufacturer".into(), "retailer".into())];
+    let &(r, s) = propagated.get(&("manufacturer".into(), "retailer".into())).unwrap();
     let op_mr = calculate_opinion(r, s, params.k, 0.5);
     println!("Manufacturer→Retailer (transitive): b={:.3}, u={:.3}, E={:.3}",
         op_mr.b, op_mr.u, op_mr.expectation());
@@ -369,9 +369,8 @@ fn dao_voting_example() {
     // This consensus opinion represents how much the group as a whole is trusted
     // by an outside observer, not the vote outcome itself.
     let consensus = members.iter().skip(1).fold(members[0].opinion, |acc, m| acc.fuse(&m.opinion));
-    println!("Consensus opinion: b={:.3}, u={:.3}, E={:.3}",
+    println!("DAO collective reputation: b={:.3}, u={:.3}, E={:.3}",
         consensus.b, consensus.u, consensus.expectation());
-    println!("Proposal {}", if consensus.expectation() > 0.6 { "PASSED" } else { "REJECTED" });
 }
 ```
 
@@ -431,7 +430,7 @@ fn ai_swarm_trust_example() {
     state.edges.insert(("coord".into(), "agent_3".into()), array![2.0, 9.0, 1.0]);
     state.edges.insert(("coord".into(), "agent_4".into()), array![0.0, 0.0, 0.0]);
 
-    // Group task: agents 2, 3, 4 collaborated on a task
+    // Group task: agents 2 and 3 collaborated on a task
     let mut h = std::collections::HashMap::new();
     h.insert("agent_2".to_string(), "executor".to_string());
     h.insert("agent_3".to_string(), "executor".to_string());
