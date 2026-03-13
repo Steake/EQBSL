@@ -7,6 +7,7 @@
 ## Documentation
 
 - [EQBSL Primer — core objects, state model, operator semantics, and embedding interface](docs/EQBSL-Primer.md)
+- [CATHEXIS Manual — architecture and usage of the trust-handle layer](docs/CATHEXIS-Manual.md)
 - [Applied showcase: ZK-gated reputation airdrops using EQBSL](https://github.com/Steake/Reputation-Gated-Airdrop)
 
 ---
@@ -20,7 +21,10 @@ https://eqbsl-demo.netlify.app/
 - **EQBSL (Evidence-Qualified Subjective Logic)** – Extend EBSL with vectorized evidence, operator-defined state evolution, hypergraph support, and embedding-oriented outputs
 - **Cathexis** – Emotional/motivational trust dynamics
 
-Built with Angular 21 and TypeScript, this tool turns the papers' trust operators and research ideas into interactive visual experiences. The web app is primarily an exploration/demo environment; the Rust crate in [rust/](rust/) is the concrete library implementation of the EQBSL pipeline.
+Built with Angular 21 and TypeScript, this tool turns the papers' trust operators and research ideas into interactive visual experiences. The web app is primarily an exploration/demo environment; the Rust code is split into a layered stack:
+
+- [rust/](rust/) — the core EQBSL crate (opinions, evidence mapping, state model, embeddings)
+- [cathexis-rs/](cathexis-rs/) — the CATHEXIS crate that builds on the shared EQBSL primitives to produce trust handles and categories
 
 > **Repository:** [`Steake/EQBSL`](https://github.com/Steake/EQBSL)  
 > **App metadata:** [`metadata.json`](./metadata.json)
@@ -117,11 +121,16 @@ For formal definitions, proofs, and protocol specifications, explore these paper
 
 ---
 
-## 🦀 Rust Crate
+## 🦀 Rust Crates
 
-A native Rust implementation of the EQBSL library is available in the [rust/](rust/) directory. It provides the EQBSL computational pipeline — from raw evidence to trust embeddings — as a standalone crate suitable for backend services, CLI tools, or embedding in other Rust projects. The current crate focuses on the trust/evidence calculus itself; proof-carrying updates are described in the papers rather than implemented as a proving system here.
+This repository contains two Rust crates that form a single layered toolchain:
 
-### Features
+- [`rust/`](rust/) — the native EQBSL library implementing the trust/evidence calculus itself
+- [`cathexis-rs/`](cathexis-rs/) — the CATHEXIS trust-handle layer that consumes EQBSL embeddings and feature states
+
+The EQBSL crate focuses on the trust/evidence calculus itself; proof-carrying updates are described in the papers rather than implemented as a proving system here. The CATHEXIS crate stays focused on categorisation and labeling, while reusing the shared EQBSL primitives rather than reimplementing them.
+
+### EQBSL Core Features
 
 - **Opinion Tuple** `(b, d, u, a)` with Consensus `⊕` and Discounting `⊗` operators
 - **Evidence-to-Opinion mapping** via `calculate_opinion(r, s, k, a)`
@@ -138,6 +147,12 @@ Add to your `Cargo.toml`:
 [dependencies]
 eqbsl = { path = "rust" }
 ndarray = "0.15"
+```
+
+Or, from this repository root, build both crates together:
+
+```bash
+cargo test --workspace
 ```
 
 ### Quick Start
@@ -161,7 +176,17 @@ let fused = op_ac.fuse(&op_w);
 println!("Fused E={:.3}", fused.expectation());
 ```
 
-For complete documentation, architecture diagrams, and real-world examples (supply chain provenance, DAO voting, AI agent swarm trust, P2P lending), see [`rust/README.md`](./rust/README.md).
+For complete EQBSL documentation, architecture diagrams, and real-world examples (supply chain provenance, DAO voting, AI agent swarm trust, P2P lending), see [`rust/README.md`](./rust/README.md).
+
+### CATHEXIS Layer
+
+The [`cathexis-rs/`](cathexis-rs/) crate turns trust embeddings and behavioural/graph features into human-readable trust handles. It is designed as the semantic layer above EQBSL, not as a second implementation of the trust algebra.
+
+```bash
+cargo test -p cathexis
+```
+
+See [`docs/CATHEXIS-Manual.md`](./docs/CATHEXIS-Manual.md) for the architecture and [`cathexis-rs/README.md`](./cathexis-rs/README.md) for crate-level usage.
 
 ---
 
@@ -172,6 +197,7 @@ For complete documentation, architecture diagrams, and real-world examples (supp
 - **RxJS** – Reactive data flows and state management
 - **Tailwind CSS** – Utility-first styling for the UI
 - **Google Generative AI** – AI-assisted trust model exploration
+- **Rust / Cargo** – Native EQBSL and CATHEXIS crates
 - **Angular CLI** – Build tooling and development server
 
 ---
@@ -182,6 +208,7 @@ For complete documentation, architecture diagrams, and real-world examples (supp
 
 - **Node.js** 18+ (LTS recommended) – [Download here](https://nodejs.org/)
 - **npm** (bundled with Node.js)
+- **Rust/Cargo** (optional, for the Rust crates)
 - **(Optional)** Google Generative AI API key – For AI-assisted features
 
 ### Installation
@@ -197,6 +224,12 @@ cd EQBSL
 
 ```bash
 npm install
+```
+
+3. **(Optional) Validate the Rust crates:**
+
+```bash
+cargo test --workspace
 ```
 
 ### Configuration (Optional)
@@ -256,12 +289,19 @@ This serves the app using production configuration (equivalent to `ng serve --co
 
 ```
 EQBSL/
+├── Cargo.toml                  # Rust workspace (EQBSL + CATHEXIS)
 ├── rust/                      # Rust crate — native EQBSL library
 │   ├── src/                   # Library source (opinion, ebsl, model, embedding)
 │   ├── examples/              # Runnable examples
 │   ├── tests/                 # Integration & BDD tests
 │   ├── Cargo.toml
 │   └── README.md              # Full Rust crate documentation
+├── cathexis-rs/               # Rust crate — CATHEXIS trust-handle layer
+│   ├── src/                   # Feature extraction, categorisation, labeling pipeline
+│   ├── examples/              # Runnable CATHEXIS demo
+│   ├── tests/                 # Pipeline tests
+│   ├── Cargo.toml
+│   └── README.md
 ├── Papers/                    # Research papers (PDFs)
 ├── src/
 │   ├── app.component.ts       # Main Angular app component
