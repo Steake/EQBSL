@@ -3,3 +3,5 @@ package-lock.json
 dist/
 .angular/
 rust/target/
+cathexis-rs/target/
+target/

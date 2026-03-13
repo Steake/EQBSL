@@ -2,6 +2,8 @@
 
 A Rust implementation of the **Evidence-Qualified Subjective Logic (EQBSL)** framework — a mathematically rigorous system for reasoning about trust, reputation, and epistemic uncertainty in distributed systems.
 
+Within this repository, this crate is the **shared trust core**. The higher-level [`cathexis-rs`](../cathexis-rs) crate builds on these primitives to derive semantic trust handles, rather than reimplementing the opinion algebra a second time.
+
 Unlike traditional scalar trust scores (e.g., a 5-star rating or a credit score), EQBSL represents trust as a rich **Opinion Tuple** `ω = (b, d, u, a)` that captures not just *how much* you trust something, but *how confident* you are in that assessment.
 
 ---
