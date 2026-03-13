@@ -11,6 +11,12 @@ pub trait Categoriser {
     /// Returns the hard category assignment (Section 3, Equation 15).
     fn predict(&self, features: &FeatureState) -> Result<usize, String> {
         let probs = self.forward(features)?;
+        
+        // Check for non-finite probabilities and return an error rather than silently picking arbitrary category.
+        if probs.iter().any(|p| !p.is_finite()) {
+            return Err("Non-finite probability detected in category prediction".to_string());
+        }
+        
         probs
             .iter()
             .enumerate()
@@ -49,11 +55,16 @@ fn sigmoid(x: &Array1<f64>) -> Array1<f64> {
     x.mapv(|v| 1.0 / (1.0 + (-v).exp()))
 }
 
-fn softmax(x: &Array1<f64>) -> Array1<f64> {
+fn softmax(x: &Array1<f64>) -> Result<Array1<f64>, String> {
+    // Validate that all input values are finite to avoid emitting NaN probabilities.
+    if x.iter().any(|v| !v.is_finite()) {
+        return Err("Non-finite value detected in softmax input".to_string());
+    }
+    
     let max = x.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b));
     let exp = x.mapv(|v| (v - max).exp());
     let sum = exp.sum();
-    exp / sum
+    Ok(exp / sum)
 }
 
 impl Categoriser for MLPCategoriser {
@@ -81,9 +92,7 @@ impl Categoriser for MLPCategoriser {
         let z2 = self.w2.dot(&a1) + &self.b2;
 
         // Output: y = softmax(z2)
-        let y = softmax(&z2);
-
-        Ok(y)
+        softmax(&z2)
     }
 }
 
@@ -105,11 +114,29 @@ mod tests {
     #[test]
     fn softmax_is_stable_and_normalized() {
         let values = array![1000.0, 1001.0, 1002.0];
-        let output = softmax(&values);
+        let output = softmax(&values).expect("softmax should succeed for finite inputs");
 
         assert!(output.iter().all(|value| value.is_finite() && *value > 0.0));
         assert!((output.sum() - 1.0).abs() < 1e-12);
         assert!(output[2] > output[1]);
         assert!(output[1] > output[0]);
+    }
+
+    #[test]
+    fn softmax_rejects_nan_inputs() {
+        let values = array![1.0, f64::NAN, 2.0];
+        let result = softmax(&values);
+        
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Non-finite"));
+    }
+
+    #[test]
+    fn softmax_rejects_infinity_inputs() {
+        let values = array![1.0, f64::INFINITY, 2.0];
+        let result = softmax(&values);
+        
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Non-finite"));
     }
 }

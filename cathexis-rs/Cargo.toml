@@ -7,12 +7,7 @@ description = "A Trust-Handle Layer for EQBSL Networks implementation in Rust"
 [dependencies]
 eqbsl = { path = "../rust" }
 serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-thiserror = "1.0"
-rand = "0.8"
 ndarray = { version = "0.15", features = ["serde"] } # Used for categoriser weights, activations, and probability vectors.
-uuid = { version = "1.0", features = ["v4", "serde"] }
-chrono = { version = "0.4", features = ["serde"] }
 
 [dev-dependencies]
 approx = "0.5"

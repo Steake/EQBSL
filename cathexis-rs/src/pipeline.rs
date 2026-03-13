@@ -47,15 +47,15 @@ where
     /// Computes features for all agents, assigns categories, and builds summaries/labels.
     pub fn batch_process(&mut self) -> Result<(), String> {
         let nodes = self.graph.get_nodes();
-        let mut category_assignments: HashMap<String, usize> = HashMap::new();
         let mut category_features: HashMap<usize, Vec<FeatureState>> = HashMap::new();
+
+        // Clear stale labels from previous runs to ensure consistency.
+        self.category_labels.clear();
 
         // 1. Compute features and assign categories
         for agent_id in &nodes {
             let features = self.graph.compute_features(agent_id)?;
             let category_id = self.categoriser.predict(&features)?;
-            
-            category_assignments.insert(agent_id.clone(), category_id);
             category_features.entry(category_id).or_default().push(features);
         }
 
@@ -78,8 +78,13 @@ where
         let probs_array = self.categoriser.forward(&features)?;
         let probs_vec: Vec<f64> = probs_array.to_vec();
         
-        // Convert probs to hard category
-        let category_id = self.categoriser.predict(&features)?;
+        // Derive category_id from the same probability vector (argmax) to ensure consistency.
+        let category_id = probs_array
+            .iter()
+            .enumerate()
+            .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal))
+            .map(|(index, _)| index)
+            .ok_or_else(|| "Failed to determine category from probabilities".to_string())?;
 
         let label_info = self.category_labels.get(&category_id)
             .ok_or_else(|| format!("No label found for category {}", category_id))?;

@@ -70,8 +70,15 @@ pub struct Evidence {
 }
 
 impl Evidence {
-    pub fn new(r: f64, s: f64, k: f64) -> Self {
-        Self { r, s, k }
+    /// Creates new evidence, validating that inputs are non-negative and k > 0.
+    pub fn new(r: f64, s: f64, k: f64) -> Result<Self, String> {
+        if r < 0.0 || s < 0.0 {
+            return Err(format!("Evidence counts must be non-negative: r={}, s={}", r, s));
+        }
+        if k <= 0.0 {
+            return Err(format!("Normalization constant K must be positive: k={}", k));
+        }
+        Ok(Self { r, s, k })
     }
 
     /// Maps evidence to a Subjective Logic opinion (Equation 3).
@@ -83,9 +90,10 @@ impl Evidence {
     }
     
     /// Combine with another evidence (additive property).
+    /// Takes self's K value. Both inputs must already be valid Evidence.
     pub fn combine(&self, other: &Evidence) -> Evidence {
-        // Assuming K should match, or we take self's K. 
         // In EBSL, evidence is additive: (r, s) + (r', s') = (r+r', s+s')
+        // We use self's K. If the caller needs matching K values, they should ensure this beforehand.
         Evidence {
             r: self.r + other.r,
             s: self.s + other.s,
@@ -101,7 +109,7 @@ mod tests {
 
     #[test]
     fn test_evidence_to_opinion() {
-        let e = Evidence::new(8.0, 2.0, 2.0); // r=8, s=2, K=2 (total=12)
+        let e = Evidence::new(8.0, 2.0, 2.0).expect("valid evidence"); // r=8, s=2, K=2 (total=12)
         let op = e.to_opinion(0.5);
         
         // b = 8/12 = 2/3 = 0.666...
@@ -112,5 +120,33 @@ mod tests {
         assert_relative_eq!(op.d, 1.0/6.0);
         assert_relative_eq!(op.u, 1.0/6.0);
         assert_relative_eq!(op.b + op.d + op.u, 1.0);
+    }
+
+    #[test]
+    fn test_evidence_rejects_negative_r() {
+        let result = Evidence::new(-1.0, 2.0, 2.0);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("non-negative"));
+    }
+
+    #[test]
+    fn test_evidence_rejects_negative_s() {
+        let result = Evidence::new(1.0, -2.0, 2.0);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("non-negative"));
+    }
+
+    #[test]
+    fn test_evidence_rejects_zero_k() {
+        let result = Evidence::new(1.0, 2.0, 0.0);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("positive"));
+    }
+
+    #[test]
+    fn test_evidence_rejects_negative_k() {
+        let result = Evidence::new(1.0, 2.0, -1.0);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("positive"));
     }
 }
