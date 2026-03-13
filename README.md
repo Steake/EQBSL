@@ -15,12 +15,12 @@
 
 https://eqbsl-demo.netlify.app/
 
-- **Evidence-Based Subjective Logic (EBSL)** – Move beyond binary trust scores to model uncertainty using evidence tuples (r, s, u)
-- **Zero-Knowledge EBSL (ZK-EBSL)** – Privacy-preserving trust computations using zero-knowledge proofs
-- **EQBSL (Evidence-Qualified Subjective Logic)** – Extensions for distributed identity and reputation systems with explicit uncertainty modeling
+- **Evidence-Based Subjective Logic (EBSL)** – Map evidence counts `(r, s)` into opinion tuples `(b, d, u, a)` with explicit uncertainty
+- **Proof-carrying trust / ZK demos** – Explore how EQBSL state updates could be constrained or attested with zero-knowledge proofs
+- **EQBSL (Evidence-Qualified Subjective Logic)** – Extend EBSL with vectorized evidence, operator-defined state evolution, hypergraph support, and embedding-oriented outputs
 - **Cathexis** – Emotional/motivational trust dynamics
 
-Built with Angular 21 and TypeScript, this tool transforms complex cryptographic and epistemic concepts into intuitive, visual experiences.
+Built with Angular 21 and TypeScript, this tool turns the papers' trust operators and research ideas into interactive visual experiences. The web app is primarily an exploration/demo environment; the Rust crate in [rust/](rust/) is the concrete library implementation of the EQBSL pipeline.
 
 > **Repository:** [`Steake/EQBSL`](https://github.com/Steake/EQBSL)  
 > **App metadata:** [`metadata.json`](./metadata.json)
@@ -36,49 +36,48 @@ Watch this comprehensive introduction to understand how EQBSL revolutionizes tru
 This video covers:
 - The fundamental limitations of traditional trust scores
 - How Evidence-Based Subjective Logic (EBSL) models uncertainty
-- Zero-knowledge proofs for privacy-preserving trust verification
-- Quantum-resistant extensions for future-proof security
+- How proof-carrying / zero-knowledge trust updates fit into the research direction
 - Real-world applications in decentralized identity and reputation systems
 
 ---
 
 ## 📖 What is EQBSL?
 
-**EQBSL (Evidence-Qualified Subjective Logic)** is a mathematical framework for reasoning about trust, reputation, and epistemic uncertainty in distributed systems. Unlike traditional trust scores (e.g., "85% trusted"), EQBSL models the full epistemic state:
+**EQBSL (Evidence-Qualified Subjective Logic)** is a mathematical framework for reasoning about trust, reputation, and epistemic uncertainty in distributed systems. In the terminology used by the papers and primer, EQBSL is **EBSL lifted into vector/tensor evidence, explicit operator-defined state evolution over time, hypergraph-native interactions, and embedding-first outputs, with optional proof-carrying updates**. Unlike traditional trust scores (e.g., "85% trusted"), EQBSL models the full epistemic state:
 
 - **Belief (b)** – Evidence supporting a proposition
 - **Disbelief (d)** – Evidence against a proposition  
-- **Uncertainty (u)** – Absence of evidence (where b + d + u = 1)
+- **Uncertainty (u)** – Absence of evidence (where `b + d + u = 1`)
+- **Base rate (a)** – Prior probability when evidence is absent
 
 ### Why EQBSL Matters
 
 Traditional reputation systems collapse complex trust relationships into a single number, losing critical information about:
 - **How much evidence** supports the rating (2 reviews vs. 2000 reviews)
 - **Uncertainty** when data is sparse or conflicting
-- **Privacy** when revealing trust judgments
-- **Quantum resistance** for future-proof cryptographic security
+- **Typed evidence** across different channels or contexts
+- **Time and structure** when trust evolves over graphs, hypergraphs, and repeated interactions
+- **Privacy** when systems want to attest to trust updates without revealing raw evidence
 
 ### Key Innovations
 
 1. **Evidence-Based Reasoning (EBSL)**  
-   Trust opinions are computed from evidence tuples (r, s) representing positive and negative observations. This enables mathematically rigorous:
+   Trust opinions are computed from evidence counts `(r, s)` representing positive and negative observations, then lifted into opinions `ω = (b, d, u, a)`. This enables mathematically rigorous:
    - Trust transitivity (A trusts B, B trusts C → A's opinion of C)
    - Opinion fusion from multiple sources
    - Uncertainty quantification
 
-2. **Zero-Knowledge Proofs (ZK-EBSL)**  
-   Prove trust properties without revealing:
-   - The exact trust values
-   - The evidence supporting them
-   - The identities involved  
-   
-   Example: "I can prove this vendor has >80% trust from 50+ verified buyers, without revealing who those buyers are."
+2. **EQBSL State & Operators**  
+   EQBSL extends basic EBSL by making the update pipeline explicit:
+   - Vectorized / tensor evidence per relationship
+   - Temporal decay and deterministic state evolution
+   - Hyperedge attribution for multi-party interactions
+   - Embedding-oriented outputs for downstream ML or policy systems
 
-3. **Quantum Resistance (EQBSL)**  
-   Built on post-quantum cryptographic primitives to ensure trust systems remain secure against quantum computers, protecting:
-   - Long-term reputation data
-   - Privacy-preserving proofs
-   - Identity attestations
+3. **Proof-Carrying Trust (optional)**  
+   The papers describe how EQBSL updates can be accompanied by zero-knowledge proofs or commitments so a system can attest that it followed the declared operator without revealing the underlying evidence.
+
+   Example: "I can prove this published trust update respects the EQBSL transition rules without revealing the private interaction log behind it."
 
 4. **Cathexis Integration**  
    Models emotional/motivational dimensions of trust:
@@ -90,9 +89,9 @@ Traditional reputation systems collapse complex trust relationships into a singl
 
 - **Decentralized Identity**: Web-of-trust without centralized authorities
 - **Reputation Systems**: Marketplaces, social networks, peer review
-- **Secure Voting**: Verifiable ballot privacy with trust in validators
+- **Secure Voting / Governance**: Reputation-weighted participation and validator selection
 - **Supply Chain**: Track product authenticity with uncertainty modeling
-- **AI Safety**: Quantify and verify trust in AI agent behaviors
+- **AI Safety**: Quantify trust in AI agent behaviors and preserve evidence lineage for downstream verification
 
 ---
 
@@ -100,18 +99,19 @@ Traditional reputation systems collapse complex trust relationships into a singl
 
 - **EBSL Logic Calculator** – Experiment with belief/disbelief/uncertainty operations
 - **EQBSL Graph Visualizer** – Model trust networks with AI-assisted node identity generation
-- **Zero-Knowledge Demos** – Explore privacy-preserving trust proofs
+- **Proof-Carrying Trust Demo** – Explore how private trust updates can be attested
 - **Cathexis Simulator** – Understand emotional dynamics in trust relationships
+- **Reputation-Gated Airdrop Example** – See how reputation scores drive eligibility and payout curves in an applied token distribution flow
 
 ---
 
 ## 🔬 Research Papers
 
-This implementation is grounded in rigorous academic research. The `Papers/` directory contains:
+This implementation is grounded in ongoing academic/research work. The `Papers/` directory contains:
 
-- **EBSL in ZK Reputation Systems** – Foundations of zero-knowledge trust proofs
-- **EQBSL+ZK** – Quantum-resistant extensions to EBSL
-- **Proof-Carrying-Trust** – Verifiable trust computations
+- **EBSL in ZK Reputation Systems** – EBSL integrated into privacy-preserving identity / reputation settings
+- **EQBSL+ZK** – The systems-oriented EQBSL extension: vectorized evidence, explicit operators, embeddings, and the bridge to proof-carrying updates
+- **Proof-Carrying-Trust** – Zero-knowledge constraints for EQBSL state transitions and verifiable trust computation
 
 For formal definitions, proofs, and protocol specifications, explore these papers and the broader [`EQBSL`](https://github.com/Steake/EQBSL) repository.
 
@@ -119,7 +119,7 @@ For formal definitions, proofs, and protocol specifications, explore these paper
 
 ## 🦀 Rust Crate
 
-A native Rust implementation of the EQBSL library is available in the [`rust/`](./rust/) directory. It provides the full EQBSL computational pipeline — from raw evidence to verifiable trust embeddings — as a standalone crate suitable for backend services, CLI tools, or embedding in other Rust projects.
+A native Rust implementation of the EQBSL library is available in the [rust/](rust/) directory. It provides the EQBSL computational pipeline — from raw evidence to trust embeddings — as a standalone crate suitable for backend services, CLI tools, or embedding in other Rust projects. The current crate focuses on the trust/evidence calculus itself; proof-carrying updates are described in the papers rather than implemented as a proving system here.
 
 ### Features
 
@@ -170,7 +170,7 @@ For complete documentation, architecture diagrams, and real-world examples (supp
 - **Angular 21** – Modern reactive framework with zoneless change detection
 - **TypeScript 5.8** – Type-safe development
 - **RxJS** – Reactive data flows and state management
-- **Tailwind CSS** – Utility-first styling for responsive UI
+- **Tailwind CSS** – Utility-first styling for the UI
 - **Google Generative AI** – AI-assisted trust model exploration
 - **Angular CLI** – Build tooling and development server
 
@@ -342,12 +342,12 @@ Visualize trust networks:
 - AI-generated identity profiles for realistic scenarios
 - Real-time trust propagation calculations
 
-### ZK Demo
+### Proof-Carrying Trust Demo
 
-Explore zero-knowledge proofs:
-- Privacy-preserving trust verification
-- Commitment schemes for EBSL opinions
-- Proof generation and verification
+Explore the proof-carrying trust idea at a conceptual level:
+- Privacy-preserving trust verification workflows
+- Commitment / proof flow for EQBSL-style state updates
+- Simulated proof generation and verification in the UI
 
 ### Cathexis
 
@@ -413,13 +413,13 @@ See also: [Subjective Logic on GitHub](https://github.com/topics/subjective-logi
 
 ## 📄 License
 
-This project is part of ongoing research by O. C. Hirst [Steake] & Shadowgraph Labs (2025). See the repository for license details.
+MIT. See [LICENSE](LICENSE).
 
 ---
 
 ## 🙏 Acknowledgments
 
-- Based on research in subjective logic, zero-knowledge proofs, and quantum-resistant cryptography
+- Based on research in subjective logic, evidence-based trust, and zero-knowledge / proof-carrying verification
 - Built with modern web technologies for accessible epistemic reasoning
 - Special thanks to the Angular, TypeScript, and open-source communities
 

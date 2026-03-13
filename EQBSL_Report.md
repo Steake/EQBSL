@@ -1,7 +1,7 @@
 # EQBSL: Potential Uses and Applications Report
 
 **Date:** February 21, 2026
-**Project:** EQBSL (Evidence-Based Quantum-resistant Belief State Logic)
+**Project:** EQBSL (Evidence-Qualified Subjective Logic)
 
 ---
 
@@ -12,7 +12,7 @@ EQBSL represents a paradigm shift in how digital systems model trust. Unlike tra
 By combining **Subjective Logic** (which explicitly models uncertainty), **Zero-Knowledge Proofs** (which ensure privacy), and **Vectorized Evidence** (which captures context), EQBSL enables decentralized systems to reason about trust in a way that is:
 *   **Expressive:** Distinguishing between "trusted", "distrusted", and "unknown".
 *   **Private:** Proving reputation without revealing sensitive interaction history.
-*   **Resilient:** Resistant to Sybil attacks and quantum decryption threats.
+*   **Resilient:** Better able to separate established evidence from uncertainty about new or weakly observed actors.
 
 ---
 
@@ -29,7 +29,7 @@ This mapping allows systems to calculate trust dynamically:
 $$b = \frac{r}{r+s+K}, \quad d = \frac{s}{r+s+K}, \quad u = \frac{K}{r+s+K}$$
 *(Where $r$ is positive evidence, $s$ is negative evidence, and $K$ is a protocol constant)*
 
-### 2.2 Proof-Carrying Trust (ZK-EBSL)
+### 2.2 Proof-Carrying Trust
 Trust updates are not just computed; they are **proven**. Using Zero-Knowledge Machine Learning (ZKML) techniques, an entity can prove that their new reputation score was correctly calculated from valid evidence without revealing *what* that evidence was (e.g., who they traded with or the specific transaction details).
 
 ### 2.3 Vectorized & Hypergraph Trust
@@ -143,7 +143,7 @@ sequenceDiagram
 | **Transitivity** | Centralized Algorithm | Manual / Short paths | **Mathematical Discounting Operators** |
 | **Privacy** | Low (Centralized DB) | Low (Public Graph) | **High (Zero-Knowledge Proofs)** |
 | **Sybil Resistance**| ID Verification (KYC) | Reliance on Introducers | **Epistemic Uncertainty (High 'u')** |
-| **Quantum Safety** | Low (RSA/ECC) | Low (RSA/ECC) | **High (PQ-Commitments)** |
+| **Cryptographic Verifiability** | Low | Low | **High (via optional proof-carrying constructions)** |
 | **Granularity** | Coarse (Global Score) | Binary | **Context-Aware (Multi-dimensional)** |
 
 ---

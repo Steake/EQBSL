@@ -307,8 +307,8 @@ export class PaperDetailComponent {
         },
       ]
     },
-    'eqbsl-quantum': {
-      id: 'eqbsl-quantum',
+    'eqbsl-against-trust-scores': {
+      id: 'eqbsl-against-trust-scores',
       title: 'EQBSL: Against Trust Scores',
       authors: 'Oliver C. Hirst, Independent Researcher (December 2025)',
       abstract: 'Most "trust scores" are numerology with a user interface: confident decimals that conceal their own provenance. Evidence-Based Subjective Logic (EBSL) is a corrective, because it refuses to treat trust as a mystical scalar and instead anchors it in manipulable, auditable evidence. This paper presents EQBSL, a systems-oriented extension that lifts evidence-based trust into a structured, vectorised, operator-defined form suitable for dynamic graphs and hypergraphs, and for downstream machine learning via stable trust embeddings.',

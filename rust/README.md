@@ -69,7 +69,7 @@ graph TD
     end
 
     subgraph Evidence["Evidence Layer"]
-        RE -->|Pairwise extraction| PE["Pairwise Evidence Tensors\n e_ij ∈ ℝᵐ"]
+        RE -->|Pairwise extraction| PE["Pairwise Evidence Tensors<br/>e_ij ∈ ℝᵐ"]
         HE -->|Hyperedge attribution α| PE
     end
 
@@ -78,19 +78,19 @@ graph TD
     end
 
     subgraph Opinion["Opinion Lifting"]
-        DE -->|"w_pos · e_ij → r\nw_neg · e_ij → s"| RS["Scalar (r, s) pairs"]
-        RS -->|"EBSL: b=r/(r+s+K)"| OP["Opinion Tuples\n ω = (b, d, u, a)"]
+        DE -->|"w_pos · e_ij → r<br/>w_neg · e_ij → s"| RS["Scalar (r, s) pairs"]
+        RS -->|"EBSL: b=r/(r+s+K)"| OP["Opinion Tuples<br/>ω = (b, d, u, a)"]
     end
 
     subgraph Propagation["Trust Propagation"]
-        OP -->|"Discounting ⊗"| TR["Transitive Trust\n A→C via B"]
-        OP -->|"Fusion ⊕"| FU["Fused Opinions\n (multiple witnesses)"]
+        OP -->|"Discounting ⊗"| TR["Transitive Trust<br/>A→C via B"]
+        OP -->|"Fusion ⊕"| FU["Fused Opinions<br/>(multiple witnesses)"]
     end
 
     subgraph Output["Output Layer"]
-        TR --> EMB["Node Embeddings\n [in_expect, out_expect, ...]"]
+        TR --> EMB["Node Embeddings<br/>[in_expect, out_expect, ...]"]
         FU --> EMB
-        EMB --> APP["Downstream Applications\n Access Control · ML · Governance"]
+        EMB --> APP["Downstream Applications<br/>Access Control · ML · Governance"]
     end
 
     style Input stroke:#6699cc
@@ -107,9 +107,9 @@ When A trusts B, and B has an opinion about C, A can derive an *indirect* opinio
 
 ```mermaid
 graph LR
-    A -->|"ω_AB\n b=0.83, u=0.17"| B
-    B -->|"ω_BC\n b=0.71, u=0.29"| C
-    A -.->|"ω_AC = ω_AB ⊗ ω_BC\n b=0.59, u=0.41"| C
+    A -->|"ω_AB<br/>b=0.83, u=0.17"| B
+    B -->|"ω_BC<br/>b=0.71, u=0.29"| C
+    A -.->|"ω_AC = ω_AB ⊗ ω_BC<br/>b=0.59, u=0.41"| C
 
     style A fill:#d4edda,stroke:#28a745,color:#000000
     style B fill:#fff3cd,stroke:#ffc107,color:#000000
@@ -124,10 +124,10 @@ Multiple independent witnesses can be combined via the **Consensus operator ⊕*
 
 ```mermaid
 graph TD
-    W1["Witness 1\n ω₁ = (0.71, 0.0, 0.29, 0.5)"] --> F["Fusion ⊕\n ω_fused = (0.83, 0.0, 0.17, 0.5)"]
-    W2["Witness 2\n ω₂ = (0.75, 0.0, 0.25, 0.5)"] --> F
-    W3["Witness 3\n ω₃ = (0.63, 0.08, 0.29, 0.5)"] --> F
-    F --> R["High-confidence result\n E(ω) = 0.91, u = 0.17"]
+    W1["Witness 1<br/>ω₁ = (0.71, 0.0, 0.29, 0.5)"] --> F["Fusion ⊕<br/>ω_fused = (0.83, 0.0, 0.17, 0.5)"]
+    W2["Witness 2<br/>ω₂ = (0.75, 0.0, 0.25, 0.5)"] --> F
+    W3["Witness 3<br/>ω₃ = (0.63, 0.08, 0.29, 0.5)"] --> F
+    F --> R["High-confidence result<br/>E(ω) = 0.91, u = 0.17"]
 
     style F fill:#d4edda,stroke:#28a745,color:#000000
     style R fill:#d1ecf1,stroke:#17a2b8,color:#000000
@@ -317,20 +317,20 @@ In a decentralized autonomous organization, members vote on proposals. Rather th
 ```mermaid
 graph LR
     subgraph Members
-        A["Alice\n b=0.91, u=0.09\n (veteran, high trust)"]
-        B["Bob\n b=0.62, u=0.25\n (active, moderate trust)"]
-        C["Carol\n b=0.33, u=0.67\n (new member, high uncertainty)"]
+        A["Alice<br/>b=0.91, u=0.09<br/>(veteran, high trust)"]
+        B["Bob<br/>b=0.62, u=0.25<br/>(active, moderate trust)"]
+        C["Carol<br/>b=0.33, u=0.67<br/>(new member, high uncertainty)"]
     end
 
     subgraph Proposal["Proposal: Upgrade Protocol"]
-        V["Reputation-Weighted Vote\n weight = b × (1 - u)"]
+        V["Reputation-Weighted Vote<br/>weight = b × (1 - u)"]
     end
 
     A -->|"weight = 0.83"| V
     B -->|"weight = 0.47"| V
     C -->|"weight = 0.11"| V
 
-    V --> R["Result: Passed\n (all members favor)"]
+    V --> R["Result: Passed<br/>(all members favor)"]
 
     style A fill:#d4edda,stroke:#28a745,color:#000000
     style C fill:#fff3cd,stroke:#ffc107,color:#000000
@@ -383,23 +383,23 @@ In a swarm of AI agents performing distributed inference tasks, agents accumulat
 ```mermaid
 graph TD
     subgraph Swarm["Agent Swarm (t=0)"]
-        A1["Agent-1\n Coordinator"]
-        A2["Agent-2\n Reliable"]
-        A3["Agent-3\n Unreliable"]
-        A4["Agent-4\n New Agent"]
+        A1["Agent-1<br/>Coordinator"]
+        A2["Agent-2<br/>Reliable"]
+        A3["Agent-3<br/>Unreliable"]
+        A4["Agent-4<br/>New Agent"]
     end
 
-    A1 -->|"r=12, s=1\n b=0.80"| A2
-    A1 -->|"r=2, s=8\n d=0.67"| A3
-    A1 -->|"r=0, s=0\n u=1.0"| A4
+    A1 -->|"r=12, s=1<br/>b=0.80"| A2
+    A1 -->|"r=2, s=8<br/>d=0.67"| A3
+    A1 -->|"r=0, s=0<br/>u=1.0"| A4
 
     subgraph Decision
-        D["Trust-Gated Task Assignment\n Only agents with E > 0.7\n and u < 0.3 receive critical tasks"]
+        D["Trust-Gated Task Assignment<br/>Only agents with E > 0.7<br/>and u < 0.3 receive critical tasks"]
     end
 
     A2 -->|"E=0.90 ✓"| D
-    A3 -->|"E=0.19 ✗\n Quarantined"| D
-    A4 -->|"E=0.50 ?\n Probation"| D
+    A3 -->|"E=0.19 ✗<br/>Quarantined"| D
+    A4 -->|"E=0.50 ?<br/>Probation"| D
 
     style A3 fill:#f8d7da,stroke:#dc3545,color:#000000
     style A2 fill:#d4edda,stroke:#28a745,color:#000000
@@ -545,18 +545,18 @@ cargo test -- --nocapture
 
 ---
 
-## Comparison: EQBSL vs. Traditional Trust Systems
+## Comparison: EQBSL vs. EBSL and Traditional Trust Systems
 
-| Feature | Traditional Score | Web-of-Trust | EQBSL |
-|:--------|:-----------------|:-------------|:------|
-| Representation | Scalar (e.g., 4.2 ★) | Boolean | **Tuple (b, d, u, a)** |
-| Uncertainty modeling | ✗ | ✗ | **✓ Explicit via `u`** |
-| Evidence dimensionality | Scalar | None | **m-dimensional tensors** |
-| Transitivity | Proprietary | Manual chains | **Formal Discounting ⊗** |
-| Multi-witness fusion | Weighted avg | None | **Algebraic Consensus ⊕** |
-| Temporal decay | Ad-hoc | None | **Per-channel β^Δt** |
-| Sybil resistance | KYC | Introducer trust | **Partial† (via uncertainty)** |
-| Serializable / portable | Partial | ✗ | **✓ Full serde support** |
+| Feature | Traditional Score | Web-of-Trust | EBSL | EQBSL |
+|:--------|:-----------------|:-------------|:-----|:------|
+| Representation | Scalar (e.g., 4.2 ★) | Boolean | Opinion tuple `(b, d, u, a)` | **Tuple (b, d, u, a)** |
+| Uncertainty modeling | ✗ | ✗ | ✓ Explicit via `u` | **✓ Explicit via `u`** |
+| Evidence dimensionality | Scalar | None | Scalar evidence counts `(r, s)` | **m-dimensional tensors** |
+| Transitivity | Proprietary | Manual chains | Discounting `⊗` | **Formal Discounting ⊗** |
+| Multi-witness fusion | Weighted avg | None | Consensus `⊕` | **Algebraic Consensus ⊕** |
+| Temporal decay | Ad-hoc | None | Not built-in | **Per-channel β^Δt** |
+| Sybil resistance | KYC | Introducer trust | Partial† (via uncertainty) | **Partial† (via uncertainty)** |
+| Serializable / portable | Partial | ✗ | Varies by implementation | **✓ Full serde support** |
 
 † EQBSL does not itself provide Sybil resistance; it computes trust (opinions) over observed events. Its explicit modeling of epistemic uncertainty about new or unknown identities can inform downstream Sybil-resistance policies, but it is not a Sybil-resistance mechanism on its own.
 

@@ -5,6 +5,7 @@ import { EbslPlaygroundComponent } from './components/ebsl-playground.component'
 import { EqbslGraphComponent } from './components/eqbsl-graph.component';
 import { ZkDemoComponent } from './components/zk-demo.component';
 import { CathexisComponent } from './components/cathexis.component';
+import { AirdropExampleComponent } from './components/airdrop-example.component';
 import { PapersComponent } from './components/papers.component';
 import { PaperDetailComponent } from './components/paper-detail.component';
 
@@ -18,6 +19,7 @@ import { PaperDetailComponent } from './components/paper-detail.component';
     EqbslGraphComponent,
     ZkDemoComponent,
     CathexisComponent,
+    AirdropExampleComponent,
     PapersComponent,
     PaperDetailComponent
   ],
@@ -37,6 +39,7 @@ import { PaperDetailComponent } from './components/paper-detail.component';
           @case ('eqbsl') { <app-eqbsl-graph /> }
           @case ('zk') { <app-zk-demo /> }
           @case ('cathexis') { <app-cathexis /> }
+          @case ('airdrop') { <app-airdrop-example /> }
           @case ('papers') { <app-papers (viewPaper)="viewPaper($event)" /> }
           @case ('paper-detail') { 
             <app-paper-detail 
@@ -63,6 +66,7 @@ export class AppComponent {
     { id: 'eqbsl', label: 'EQBSL Graph' },
     { id: 'zk', label: 'ZK Proofs' },
     { id: 'cathexis', label: 'Cathexis Handles' },
+    { id: 'airdrop', label: 'Airdrop Example' },
     { id: 'papers', label: 'Papers' }
   ];
 
