@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use crate::summary::CategorySummary;
+use crate::{summary::CategorySummary, types::CategoryId};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct CategoryLabel {
@@ -16,21 +16,21 @@ pub struct LabelRecord {
 }
 
 pub trait LabelStore {
-    fn get(&self, category_id: usize) -> Option<&LabelRecord>;
-    fn upsert(&mut self, category_id: usize, record: LabelRecord);
+    fn get(&self, category_id: CategoryId) -> Option<&LabelRecord>;
+    fn upsert(&mut self, category_id: CategoryId, record: LabelRecord);
 }
 
 #[derive(Debug, Clone, Default)]
 pub struct InMemoryLabelStore {
-    records: BTreeMap<usize, LabelRecord>,
+    records: BTreeMap<CategoryId, LabelRecord>,
 }
 
 impl LabelStore for InMemoryLabelStore {
-    fn get(&self, category_id: usize) -> Option<&LabelRecord> {
+    fn get(&self, category_id: CategoryId) -> Option<&LabelRecord> {
         self.records.get(&category_id)
     }
 
-    fn upsert(&mut self, category_id: usize, record: LabelRecord) {
+    fn upsert(&mut self, category_id: CategoryId, record: LabelRecord) {
         self.records.insert(category_id, record);
     }
 }

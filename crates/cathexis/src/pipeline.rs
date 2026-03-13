@@ -5,7 +5,7 @@ use crate::{
     graph::GraphSnapshot,
     label::{CategoryLabel, InMemoryLabelStore, LabelRecord, LabelStore, LabelUpdatePolicy},
     summary::{CategorySummaryCollection, CovarianceMode},
-    types::{AgentAssignment, AgentFeatureState, EqbslState},
+    types::{AgentAssignment, AgentFeatureState, CategoryId, EqbslState},
 };
 
 pub struct BatchInput<'a> {
@@ -31,7 +31,7 @@ pub struct QueryInput<'a> {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct QueryAgentHandleResponse {
-    pub category_id: usize,
+    pub category_id: CategoryId,
     pub probabilities: Vec<f64>,
     pub label: String,
     pub description: String,
@@ -39,7 +39,7 @@ pub struct QueryAgentHandleResponse {
 }
 
 pub trait LabelProvider {
-    fn label_for_summary(&mut self, category_id: usize, summary: &crate::CategorySummary) -> CategoryLabel;
+    fn label_for_summary(&mut self, category_id: CategoryId, summary: &crate::CategorySummary) -> CategoryLabel;
 }
 
 /// Minimal fallback provider for bootstrapping without an external LLM.
@@ -47,7 +47,7 @@ pub trait LabelProvider {
 pub struct HeuristicLabelProvider;
 
 impl LabelProvider for HeuristicLabelProvider {
-    fn label_for_summary(&mut self, category_id: usize, summary: &crate::CategorySummary) -> CategoryLabel {
+    fn label_for_summary(&mut self, category_id: CategoryId, summary: &crate::CategorySummary) -> CategoryLabel {
         let density = if summary.avg_degree >= 3.0 { "connected" } else { "peripheral" };
         let cohesion = if summary.avg_clustering >= 0.3 { "clustered" } else { "diffuse" };
         CategoryLabel {
@@ -83,7 +83,7 @@ where
             extractor,
             categorizer,
             labels,
-            covariance_mode: CovarianceMode::Full,
+            covariance_mode: CovarianceMode::None,
             label_update_policy: LabelUpdatePolicy::default(),
             last_batch: None,
         }
@@ -243,10 +243,13 @@ mod tests {
     }
 
     fn demo_eqbsl() -> EqbslState {
+        // alice: high trust (r=19, s=1) → b≈0.864, d≈0.045, u≈0.091
+        // bob:   moderate trust (r=9, s=3) → b≈0.643, d≈0.214, u≈0.143
+        // carol: low trust (r=3, s=9) → b≈0.214, d≈0.643, u≈0.143
         EqbslState::new([
-            NodeState::new("alice", vec![0.9, 0.05, 0.05], 0.95, 0.05),
-            NodeState::new("bob", vec![0.5, 0.25, 0.25], 0.6, 0.2),
-            NodeState::new("carol", vec![0.2, 0.4, 0.4], 0.3, 0.45),
+            NodeState::from_evidence("alice", vec![0.9, 0.05, 0.05], 19.0, 1.0, 0.5).unwrap(),
+            NodeState::from_evidence("bob",   vec![0.5, 0.25, 0.25],  9.0, 3.0, 0.5).unwrap(),
+            NodeState::from_evidence("carol", vec![0.2, 0.4,  0.4],   3.0, 9.0, 0.5).unwrap(),
         ])
     }
 

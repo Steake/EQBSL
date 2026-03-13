@@ -1,6 +1,6 @@
 use cathexis::{
-    BatchInput, CathexisEngine, EqbslState, GraphSnapshot, HeuristicLabelProvider, InMemoryLabelStore,
-    MlpCategorizer, NodeState, QueryInput, StaticFeatureExtractor,
+    BatchInput, CathexisEngine, EqbslState, GraphSnapshot, HeuristicLabelProvider,
+    InMemoryLabelStore, MlpCategorizer, NodeState, QueryInput, StaticFeatureExtractor,
 };
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -9,11 +9,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         [("alice", "bob"), ("bob", "carol"), ("carol", "dave")],
     );
 
+    // Build EQBSL state using real Evidence counts (K=2, base_rate=0.5).
+    // alice: r=18, s=2  → high-trust
+    // bob:   r=12, s=4  → moderate-trust
+    // carol: r=6,  s=6  → neutral
+    // dave:  r=2,  s=10 → low-trust
     let eqbsl = EqbslState::new([
-        NodeState::new("alice", vec![0.9, 0.05, 0.05], 0.93, 0.05),
-        NodeState::new("bob", vec![0.7, 0.15, 0.15], 0.75, 0.15),
-        NodeState::new("carol", vec![0.4, 0.2, 0.4], 0.48, 0.35),
-        NodeState::new("dave", vec![0.2, 0.5, 0.3], 0.25, 0.50),
+        NodeState::from_evidence("alice", vec![0.9, 0.05, 0.05], 18.0, 2.0, 0.5)?,
+        NodeState::from_evidence("bob",   vec![0.7, 0.15, 0.15], 12.0, 4.0, 0.5)?,
+        NodeState::from_evidence("carol", vec![0.4, 0.2,  0.4],   6.0, 6.0, 0.5)?,
+        NodeState::from_evidence("dave",  vec![0.2, 0.5,  0.3],   2.0, 10.0, 0.5)?,
     ]);
 
     let extractor = StaticFeatureExtractor::with_graph_stats();
@@ -54,10 +59,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     })?;
 
     println!(
-        "alice => category={} handle={} probs={:?}",
+        "alice => category={} handle={:?} probs={:.3?}",
         response.category_id, response.label, response.probabilities
     );
 
     Ok(())
 }
-

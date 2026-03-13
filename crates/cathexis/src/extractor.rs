@@ -93,8 +93,9 @@ impl FeatureExtractor for StaticFeatureExtractor {
 
         let mut v = Vec::with_capacity(node.trust_embedding.len() + 6);
         v.extend_from_slice(&node.trust_embedding);
-        v.push(node.global_reputation);
-        v.push(node.uncertainty);
+        // Derived scalars from the EQBSL opinion
+        v.push(node.opinion.expected_probability()); // global reputation proxy
+        v.push(node.opinion.u);                      // uncertainty
 
         if self.include_graph_stats {
             v.push(ctx.graph.degree(agent_id) as f64);
