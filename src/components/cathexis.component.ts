@@ -170,6 +170,13 @@ interface CategorySummaryView {
               <div>E(ω)={{ queryExpectation().toFixed(3) }}</div>
             </div>
           </div>
+          
+          <div class="flex gap-2">
+             <button (click)="setProfile('new')" class="flex-1 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded text-xs transition-colors">New</button>
+             <button (click)="setProfile('good')" class="flex-1 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded text-xs transition-colors">Good</button>
+             <button (click)="setProfile('bad')" class="flex-1 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded text-xs transition-colors">Bad</button>
+             <button (click)="setProfile('mixed')" class="flex-1 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded text-xs transition-colors">Mixed</button>
+          </div>
         </div>
 
         <div class="xl:col-span-3 space-y-6">
@@ -311,6 +318,81 @@ engine.refresh_labels(&batch, &mut provider);</code></pre>
               (<code class="font-mono text-indigo-200">fθ</code>) and pluggable feature extractors / label providers.
             </div>
           </div>
+
+          <!-- Neural Network Simulation -->
+          <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 relative overflow-hidden">
+             <div class="absolute top-0 right-0 p-2 opacity-10">
+               <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 20 20"><path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17zM15.211 6.276a1 1 0 000-1.788l-4.764-2.382a1 1 0 00-.894 0L4.789 4.488a1 1 0 000 1.788l4.764 2.382a1 1 0 00.894 0l4.764-2.382zM4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z" /></svg>
+             </div>
+
+             <h3 class="text-lg font-bold text-white mb-6">Categoriser Output (Softmax)</h3>
+             
+             <div class="space-y-3">
+               @for (cat of categories(); track cat.id) {
+                 <div class="relative">
+                   <div class="flex justify-between text-xs text-slate-300 mb-1">
+                     <span>{{ cat.name }}</span>
+                     <span>{{ (cat.prob * 100).toFixed(1) }}%</span>
+                   </div>
+                   <div class="h-2 w-full bg-slate-900 rounded-full overflow-hidden">
+                     <div class="h-full transition-all duration-500" 
+                          [style.width.%]="cat.prob * 100"
+                          [class]="cat.color"></div>
+                   </div>
+                 </div>
+               }
+             </div>
+          </div>
+
+          <!-- Final Label Card -->
+          <div class="relative">
+            <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-600/10 rounded-2xl blur-xl"></div>
+            <div class="relative bg-slate-900 border border-slate-800 rounded-2xl p-8 flex flex-col justify-center items-center text-center min-h-[200px]">
+              
+              <div class="text-xs font-bold tracking-widest text-slate-500 uppercase mb-4">LLM Generated Handle</div>
+              
+              <div [class]="'px-8 py-4 rounded-full border-2 text-xl font-bold shadow-[0_0_30px_rgba(0,0,0,0.3)] transition-all duration-500 ' + currentLabel().style">
+                {{ currentLabel().handle }}
+              </div>
+
+              <p class="text-slate-300 italic mt-6 max-w-md animate-in fade-in slide-in-from-bottom-2 duration-500 delay-100">
+                "{{ currentLabel().gloss }}"
+              </p>
+              
+              <div class="mt-6 pt-6 border-t border-slate-800 w-full text-left">
+                
+                <div class="mb-6">
+                  <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Formal Model (from Paper)</h4>
+                  <div class="bg-slate-950/50 p-4 rounded border border-slate-800 font-mono text-xs text-slate-400 space-y-2">
+                    <div><span class="text-purple-400">x</span><sub>i</sub>(t) = <span class="text-blue-400">&Phi;</span>(i, <span class="text-emerald-400">u</span><sub>i</sub>(t), <span class="text-amber-400">G</span><sub>t</sub>) &in; &#8477;<sup>d</sup></div>
+                    <div><span class="text-orange-400">f</span><sub>&theta;</sub>: &#8477;<sup>d</sup> &rarr; &Delta;<sup>K-1</sup></div>
+                    <div>c<sub>i</sub>(t) = argmax<sub>k</sub> <span class="text-orange-400">f</span><sub>&theta;</sub>(<span class="text-purple-400">x</span><sub>i</sub>(t))<sub>k</sub></div>
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Rust Implementation</h4>
+                  <div class="text-[10px] text-slate-600 font-mono mb-1">cathexis-rs/src/pipeline.rs</div>
+                  <div class="bg-black/50 p-3 rounded font-mono text-[10px] text-slate-400 overflow-x-auto border border-slate-800">
+<pre>let features = self.graph.compute_features(agent_id)?;
+let probs = self.categoriser.forward(&features)?;
+let category_id = self.categoriser.predict(&features)?;
+let label = self.labeler.generate_label(&category_id)?;</pre>
+                  </div>
+                </div>
+
+                <div class="flex justify-center mt-6">
+                   <a href="https://github.com/Steake/EQBSL/blob/main/docs/CATHEXIS-Manual.md" target="_blank" class="text-indigo-400 hover:text-indigo-300 text-xs flex items-center gap-1 transition-colors">
+                     <span>Read the CATHEXIS System Manual</span>
+                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                   </a>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

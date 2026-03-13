@@ -4,6 +4,9 @@
 //! feature state construction `x_i(t)`, category inference `p_i(t)`, hard assignment `c_i(t)`,
 //! category summaries, label metadata, drift checks, and batch/online query pipeline helpers.
 //!
+//! It integrates the core EQBSL Subjective Logic types (`Opinion`, `Evidence`) with the
+//! CATHEXIS categorization and labeling pipeline.
+//!
 //! It is intentionally modular and does **not** implement a full EQBSL engine or LLM runtime.
 //! Instead, it defines interfaces and reusable components to sit on top of an existing trust stack.
 
@@ -31,5 +34,6 @@ pub use pipeline::{
 };
 pub use summary::{CategorySummary, CategorySummaryCollection, CovarianceMode};
 pub use types::{
-    AgentAssignment, AgentFeatureState, AgentId, CategoryId, EqbslState, NodeState, ProbabilityVector,
+    AgentAssignment, AgentFeatureState, AgentId, CategoryId, EqbslState, Evidence, NodeState,
+    Opinion, ProbabilityVector,
 };
