@@ -86,3 +86,30 @@ impl Categoriser for MLPCategoriser {
         Ok(y)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{sigmoid, softmax};
+    use ndarray::array;
+
+    #[test]
+    fn sigmoid_handles_extreme_values() {
+        let values = array![-1000.0, 0.0, 1000.0];
+        let output = sigmoid(&values);
+
+        assert!(output[0] < 1e-10);
+        assert!((output[1] - 0.5).abs() < 1e-12);
+        assert!((output[2] - 1.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn softmax_is_stable_and_normalized() {
+        let values = array![1000.0, 1001.0, 1002.0];
+        let output = softmax(&values);
+
+        assert!(output.iter().all(|value| value.is_finite() && *value > 0.0));
+        assert!((output.sum() - 1.0).abs() < 1e-12);
+        assert!(output[2] > output[1]);
+        assert!(output[1] > output[0]);
+    }
+}

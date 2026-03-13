@@ -30,7 +30,7 @@ graph LR
 The crate provides a modular, type-safe implementation of the CATHEXIS pipeline.
 
 ### Location
-`/workspace/EQBSL/cathexis-rs`
+`EQBSL/cathexis-rs`
 
 ### Core Modules
 *   `core`: CATHEXIS-facing compatibility types that reuse the shared EQBSL opinion/evidence mapping.

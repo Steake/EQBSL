@@ -43,3 +43,26 @@ impl LabelingModel for DummyLabeler {
         })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{CategorySummary, DummyLabeler, LabelingModel};
+
+    #[test]
+    fn dummy_labeler_formats_category_handles() {
+        let labeler = DummyLabeler;
+        let summary = CategorySummary {
+            category_id: 7,
+            top_features: vec!["trust_embedding".to_string()],
+            deviations: Vec::new(),
+            exemplar_stats: vec![2.0],
+            platform_provenance: "EQBSL-Network".to_string(),
+        };
+
+        let label = labeler.generate_label(&summary).expect("dummy labeler should succeed");
+
+        assert_eq!(label.handle, "Category-7");
+        assert_eq!(label.gloss, "Auto-generated category");
+        assert_eq!(label.guidance, None);
+    }
+}

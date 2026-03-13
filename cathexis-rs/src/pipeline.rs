@@ -64,7 +64,7 @@ where
             // Build summary (simplified implementation)
             let summary = self.build_category_summary(category_id, &features_list);
             
-            // Check if we need a new label (always for now)
+            // Generate or refresh the current category label from the summary.
             let label_info = self.labeler.generate_label(&summary)?;
             self.category_labels.insert(category_id, label_info);
         }
@@ -93,16 +93,91 @@ where
         })
     }
 
-    fn build_category_summary(&self, category_id: usize, _features: &[FeatureState]) -> CategorySummary {
+    fn build_category_summary(&self, category_id: usize, feature_samples: &[FeatureState]) -> CategorySummary {
+        let sample_count = feature_samples.len() as f64;
+
         // In a real implementation, this would compute means, deviations, etc.
-        // It would also track drift in \mu_k(t) and membership to decide when to split, merge, or re-label categories (Section 5).
-        // For now, return a placeholder summary.
+        // It would also track drift in μ_k(t) and membership to decide when to split, merge, or re-label categories (Section 5).
+        // For now, return a lightweight summary derived from the available samples.
         CategorySummary {
             category_id,
             top_features: vec!["trust_embedding".to_string(), "centrality".to_string()],
-            deviations: vec![("uncertainty".to_string(), -0.5)], // e.g. lower uncertainty than average
-            exemplar_stats: vec![0.0; 5], // placeholder
+            deviations: Vec::new(),
+            exemplar_stats: vec![sample_count], // placeholder until richer summary statistics are implemented
             platform_provenance: "EQBSL-Network".to_string(),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::CathexisPipeline;
+    use crate::categoriser::Categoriser;
+    use crate::eqbsl::{TrustEmbedding, TrustGraph};
+    use crate::features::{BehaviouralFeatures, FeatureState, GraphFeatures, TrustFeatures};
+    use crate::labeling::{DummyLabeler, LabelingModel};
+    use ndarray::Array1;
+
+    struct MockGraph;
+
+    impl TrustGraph for MockGraph {
+        fn get_nodes(&self) -> Vec<String> {
+            vec!["agent_1".to_string()]
+        }
+
+        fn compute_features(&self, _agent_id: &str) -> Result<FeatureState, String> {
+            Ok(sample_features())
+        }
+    }
+
+    struct FixedCategoriser;
+
+    impl Categoriser for FixedCategoriser {
+        fn forward(&self, _features: &FeatureState) -> Result<Array1<f64>, String> {
+            Ok(Array1::from(vec![1.0]))
+        }
+    }
+
+    fn sample_features() -> FeatureState {
+        FeatureState {
+            trust: TrustFeatures {
+                embedding: TrustEmbedding::new(vec![0.1, 0.2, 0.3]),
+                reputation_score: 0.8,
+                uncertainty: 0.1,
+            },
+            graph: GraphFeatures {
+                degree: 10.0,
+                centrality: 0.5,
+                clustering_coefficient: 0.2,
+                extra_metrics: vec![],
+            },
+            behavioural: BehaviouralFeatures {
+                temporal_activity: 0.9,
+                platform_metrics: vec![1.0, 0.0],
+            },
+        }
+    }
+
+    #[test]
+    fn build_category_summary_counts_samples() {
+        let pipeline = CathexisPipeline::new(MockGraph, FixedCategoriser, DummyLabeler);
+        let features = vec![sample_features(), sample_features()];
+
+        let summary = pipeline.build_category_summary(3, &features);
+
+        assert_eq!(summary.category_id, 3);
+        assert_eq!(summary.exemplar_stats, vec![2.0]);
+        assert_eq!(summary.platform_provenance, "EQBSL-Network");
+        assert!(summary.deviations.is_empty());
+        assert_eq!(summary.top_features, vec!["trust_embedding", "centrality"]);
+    }
+
+    #[test]
+    fn dummy_labeler_remains_compatible_with_pipeline_summary() {
+        let pipeline = CathexisPipeline::new(MockGraph, FixedCategoriser, DummyLabeler);
+        let summary = pipeline.build_category_summary(1, &[sample_features()]);
+        let label = DummyLabeler.generate_label(&summary).expect("dummy labeler should succeed");
+
+        assert_eq!(label.handle, "Category-1");
     }
 }
