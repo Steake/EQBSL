@@ -59,8 +59,8 @@ import { CommonModule } from '@angular/common';
       <div class="bg-slate-800/30 border border-slate-700/50 rounded-lg p-8 text-center">
         <h2 class="text-2xl font-bold mb-4 text-slate-200">Additional Resources</h2>
         <p class="text-slate-400 mb-6 max-w-2xl mx-auto">
-          These papers represent ongoing research into EQBSL (Extended Quantum Belief State Logic), 
-          zero-knowledge proofs, and trust-based systems. For the latest updates and source code, 
+          These papers represent ongoing research into EQBSL, proof-carrying trust,
+          and evidence-based trust systems. For the latest updates and source code,
           visit our GitHub repository.
         </p>
         <a 
@@ -100,7 +100,7 @@ export class PapersComponent {
       downloadUrl: 'https://raw.githubusercontent.com/Steake/EQBSL/main/Papers/EBSL%20in%20ZK%20Reputation%20Systems.pdf'
     },
     {
-      id: 'eqbsl-quantum',
+      id: 'eqbsl-against-trust-scores',
       title: 'EQBSL: Against Trust Scores',
       description: 'A systems-oriented extension of EBSL that lifts evidence-based trust into structured, vectorised, operator-defined form suitable for dynamic graphs and hypergraphs. Provides stable trust embeddings for downstream machine learning while maintaining clear chain of custody back to evidence.',
       filename: 'EQBSL+ZK.pdf',

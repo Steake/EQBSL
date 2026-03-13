@@ -33,11 +33,11 @@ import { Component, ChangeDetectionStrategy, output } from '@angular/core';
           </video>
         </div>
         <p class="text-sm text-slate-500 mt-4 text-center">
-          This video covers the fundamental limitations of traditional trust scores, EBSL's uncertainty modeling, zero-knowledge proofs, quantum-resistant extensions, and real-world applications.
+          This video covers the limitations of traditional trust scores, EBSL uncertainty modeling, proof-carrying trust, and applied reputation use cases.
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-16">
         <div class="group relative p-6 bg-slate-800/50 rounded-xl border border-slate-700 hover:border-indigo-500/50 transition-all cursor-pointer" (click)="navigate.emit('ebsl')">
           <div class="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl opacity-0 group-hover:opacity-20 transition duration-500 blur"></div>
           <h3 class="text-xl font-bold text-white mb-2 relative">1. EBSL Logic</h3>
@@ -79,6 +79,17 @@ import { Component, ChangeDetectionStrategy, output } from '@angular/core';
           </p>
           <div class="mt-4 flex items-center text-amber-400 text-sm font-medium relative">
             Generate Handles &rarr;
+          </div>
+        </div>
+
+        <div class="group relative p-6 bg-slate-800/50 rounded-xl border border-slate-700 hover:border-emerald-500/50 transition-all cursor-pointer md:col-span-2 xl:col-span-1" (click)="navigate.emit('airdrop')">
+          <div class="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl opacity-0 group-hover:opacity-20 transition duration-500 blur"></div>
+          <h3 class="text-xl font-bold text-white mb-2 relative">5. Reputation-Gated Airdrops</h3>
+          <p class="text-slate-400 relative">
+            Applied use case. See how EBSL/EQBSL reputation becomes an eligibility score, a payout curve, and either an ECDSA or ZK claim path.
+          </p>
+          <div class="mt-4 flex items-center text-emerald-400 text-sm font-medium relative">
+            Explore Airdrop Example &rarr;
           </div>
         </div>
       </div>
