@@ -17,7 +17,7 @@ fn opinion_new_valid() {
 fn opinion_new_rejects_invalid_sum() {
     assert_eq!(
         Opinion::new(0.6, 0.3, 0.3, 0.5).unwrap_err(),
-        CathexisError::InvalidOpinion { b: 0.6, d: 0.3, u: 0.3 }
+        CathexisError::InvalidOpinion { b: 0.6, d: 0.3, u: 0.3, a: 0.5 }
     );
 }
 
@@ -169,7 +169,7 @@ fn evidence_to_opinion_known_values() {
 fn evidence_combine_additive() {
     let a = Evidence::binary(5.0, 2.0).unwrap();
     let b = Evidence::binary(3.0, 1.0).unwrap();
-    let combined = a.combine(&b);
+    let combined = a.combine(&b).unwrap();
     assert_eq!(combined.r, 8.0);
     assert_eq!(combined.s, 3.0);
     assert_eq!(combined.k, 2.0);
@@ -179,9 +179,20 @@ fn evidence_combine_additive() {
 fn evidence_combine_opinion_stronger_than_single() {
     let a = Evidence::binary(5.0, 2.0).unwrap();
     let b = Evidence::binary(3.0, 1.0).unwrap();
-    let combined = a.combine(&b);
+    let combined = a.combine(&b).unwrap();
     let op_a = a.to_opinion(0.5);
     let op_combined = combined.to_opinion(0.5);
     // More evidence → lower uncertainty
     assert!(op_combined.u < op_a.u, "combined.u={} >= a.u={}", op_combined.u, op_a.u);
+}
+
+#[test]
+fn evidence_combine_rejects_mismatched_k() {
+    let a = Evidence::new(5.0, 2.0, 2.0).unwrap();
+    let b = Evidence::new(3.0, 1.0, 3.0).unwrap(); // different K
+    let err = a.combine(&b).unwrap_err();
+    assert!(
+        matches!(err, CathexisError::IncompatibleEvidence { .. }),
+        "expected IncompatibleEvidence, got {err:?}"
+    );
 }

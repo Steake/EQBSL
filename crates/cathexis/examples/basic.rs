@@ -59,7 +59,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     })?;
 
     println!(
-        "alice => category={} handle={:?} probs={:.3?}",
+        "alice => category={} handle={} probs={:.3?}",
         response.category_id, response.label, response.probabilities
     );
 

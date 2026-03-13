@@ -30,7 +30,7 @@ graph LR
 The crate provides a modular, type-safe implementation of the CATHEXIS pipeline.
 
 ### Location
-`/workspace/EQBSL/cathexis-rs`
+`cathexis-rs/` (from the repository root)
 
 ### Core Modules
 *   `core`: Subjective Logic primitives (`Opinion`, `Evidence`).
@@ -45,7 +45,7 @@ The crate provides a modular, type-safe implementation of the CATHEXIS pipeline.
 **Prerequisites**: Rust and Cargo installed.
 
 ```bash
-cd EQBSL/cathexis-rs
+cd cathexis-rs
 cargo build
 cargo test
 ```

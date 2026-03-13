@@ -2,8 +2,8 @@ use std::collections::BTreeMap;
 
 use crate::error::{CathexisError, Result};
 
+pub use crate::error::CategoryId;
 pub type AgentId = String;
-pub type CategoryId = usize;
 pub type ProbabilityVector = Vec<f64>;
 
 // ---------------------------------------------------------------------------
@@ -30,21 +30,21 @@ impl Opinion {
     /// Construct and validate. Returns an error if `|b+d+u−1| > 1e-9`.
     pub fn new(b: f64, d: f64, u: f64, a: f64) -> Result<Self> {
         if (b + d + u - 1.0).abs() > 1e-9 {
-            return Err(CathexisError::InvalidOpinion { b, d, u });
+            return Err(CathexisError::InvalidOpinion { b, d, u, a });
         }
         if !(0.0..=1.0).contains(&b)
             || !(0.0..=1.0).contains(&d)
             || !(0.0..=1.0).contains(&u)
             || !(0.0..=1.0).contains(&a)
         {
-            return Err(CathexisError::InvalidOpinion { b, d, u });
+            return Err(CathexisError::InvalidOpinion { b, d, u, a });
         }
         Ok(Self { b, d, u, a })
     }
 
-    /// Vacuous opinion: complete uncertainty, no evidence.
+    /// Vacuous opinion: complete uncertainty, no evidence. `a` is clamped to [0, 1].
     pub fn vacuous(a: f64) -> Self {
-        Self { b: 0.0, d: 0.0, u: 1.0, a }
+        Self { b: 0.0, d: 0.0, u: 1.0, a: a.clamp(0.0, 1.0) }
     }
 
     /// Expected probability `E[X] = b + a·u`.
@@ -76,13 +76,20 @@ impl Opinion {
         } else {
             (self.a * gamma_a + other.a * gamma_b) / a_denom
         };
-        // Re-clamp to [0,1] to absorb floating-point drift
-        Opinion {
-            b: b.clamp(0.0, 1.0),
-            d: d.clamp(0.0, 1.0),
-            u: u.clamp(0.0, 1.0),
-            a: a.clamp(0.0, 1.0),
-        }
+        // Clamp to [0,1] to absorb floating-point drift, then re-normalize b/d/u
+        // so that b+d+u=1 is preserved exactly.
+        let b = b.clamp(0.0, 1.0);
+        let d = d.clamp(0.0, 1.0);
+        let u = u.clamp(0.0, 1.0);
+        let total = b + d + u;
+        let (b, d, u) = if total > f64::EPSILON {
+            (b / total, d / total, u / total)
+        } else {
+            // Degenerate: all components clamped to zero — fall back to maximum-entropy
+            // (uniform) opinion. This should not occur for well-formed input opinions.
+            (1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0)
+        };
+        Opinion { b, d, u, a: a.clamp(0.0, 1.0) }
     }
 }
 
@@ -127,12 +134,21 @@ impl Evidence {
     }
 
     /// Additive combination: `(r, s) + (r', s') = (r+r', s+s')`.
-    pub fn combine(&self, other: &Evidence) -> Evidence {
-        Evidence {
+    ///
+    /// Returns an error if `self.k != other.k`, as combining evidence with
+    /// different normalisation constants produces a mathematically inconsistent result.
+    pub fn combine(&self, other: &Evidence) -> Result<Evidence> {
+        if (self.k - other.k).abs() > f64::EPSILON {
+            return Err(CathexisError::IncompatibleEvidence {
+                k_self: self.k,
+                k_other: other.k,
+            });
+        }
+        Ok(Evidence {
             r: self.r + other.r,
             s: self.s + other.s,
             k: self.k,
-        }
+        })
     }
 }
 
