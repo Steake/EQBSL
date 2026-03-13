@@ -7,6 +7,7 @@
 ## Documentation
 
 - [EQBSL Primer — core objects, state model, operator semantics, and embedding interface](docs/EQBSL-Primer.md)
+- [**CATHEXIS System Manual — architecture and usage of the trust-handle layer**](docs/CATHEXIS-Manual.md)
 - [Applied showcase: ZK-gated reputation airdrops using EQBSL](https://github.com/Steake/Reputation-Gated-Airdrop)
 
 ---
@@ -124,6 +125,7 @@ For formal definitions, proofs, and protocol specifications, explore these paper
 - **RxJS** – Reactive data flows and state management
 - **Tailwind CSS** – Utility-first styling for responsive UI
 - **Google Generative AI** – AI-assisted trust model exploration
+- **Rust (Cathexis Crate)** – Backend logic for CATHEXIS trust-handle pipeline (`cathexis-rs/`)
 - **Angular CLI** – Build tooling and development server
 
 ---
@@ -134,6 +136,7 @@ For formal definitions, proofs, and protocol specifications, explore these paper
 
 - **Node.js** 18+ (LTS recommended) – [Download here](https://nodejs.org/)
 - **npm** (bundled with Node.js)
+- **Rust/Cargo** – For building the CATHEXIS crate
 - **(Optional)** Google Generative AI API key – For AI-assisted features
 
 ### Installation
@@ -145,10 +148,17 @@ git clone https://github.com/Steake/EQBSL.git
 cd EQBSL
 ```
 
-2. **Install dependencies:**
+2. **Install frontend dependencies:**
 
 ```bash
 npm install
+```
+
+3. **Build CATHEXIS crate (Optional):**
+
+```bash
+cd cathexis-rs
+cargo build
 ```
 
 ### Configuration (Optional)
@@ -208,6 +218,7 @@ This serves the app using production configuration (equivalent to `ng serve --co
 
 ```
 EQBSL/
+├── cathexis-rs/               # Rust implementation of CATHEXIS
 ├── Papers/                    # Research papers (PDFs)
 ├── src/
 │   ├── app.component.ts       # Main Angular app component
