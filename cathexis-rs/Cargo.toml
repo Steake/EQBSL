@@ -1,0 +1,13 @@
+[package]
+name = "cathexis"
+version = "0.1.0"
+edition = "2021"
+description = "A Trust-Handle Layer for EQBSL Networks implementation in Rust"
+
+[dependencies]
+eqbsl = { path = "../rust" }
+serde = { version = "1.0", features = ["derive"] }
+ndarray = { version = "0.15", features = ["serde"] } # Used for categoriser weights, activations, and probability vectors.
+
+[dev-dependencies]
+approx = "0.5"
