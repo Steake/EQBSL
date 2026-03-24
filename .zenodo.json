@@ -1,0 +1,27 @@
+{
+  "title": "EQBSL Explorer — Interactive Evidence-Based Subjective Logic Platform",
+  "description": "Interactive web application for the EQBSL (Evidence-based Quantum-resistant Belief State Logic) framework — a mathematically rigorous replacement for scalar trust scores. Models the full epistemic state using evidence tuples (positive, negative, uncertainty, quality) and supports zero-knowledge trust verification and quantum-resistant extensions.\n\nImplements: EQBSL (DOI: 10.5281/zenodo.19056322), CATHEXIS trust-handle layer (DOI: 10.5281/zenodo.19083966), Shadowgraph HD social graph (DOI: 10.5281/zenodo.19056324), and Plenum collective field architecture (DOI: 10.5281/zenodo.19080708).",
+  "upload_type": "software",
+  "creators": [{"name": "Hirst, Oliver C.", "affiliation": "Shadowgraph Labs"}],
+  "keywords": [
+    "subjective logic", "trust systems", "epistemic uncertainty",
+    "evidence-based reasoning", "EQBSL", "EBSL",
+    "Bayesian trust", "decentralized reputation", "trust computation",
+    "zero-knowledge proofs", "ZK proofs", "quantum resistance",
+    "belief logic", "uncertainty quantification", "trust tensors",
+    "hyperdimensional computing", "social graph", "identity prediction",
+    "CATHEXIS", "trust handles", "semantic trust labels",
+    "Angular", "TypeScript", "Rust", "WebAssembly"
+  ],
+  "license": "MIT",
+  "access_right": "open",
+  "related_identifiers": [
+    {"relation": "isSupplementTo", "identifier": "10.5281/zenodo.19056322", "scheme": "doi", "resource_type": "publication-preprint"},
+    {"relation": "isSupplementTo", "identifier": "10.5281/zenodo.19083966", "scheme": "doi", "resource_type": "publication-preprint"},
+    {"relation": "isSupplementTo", "identifier": "10.5281/zenodo.19056324", "scheme": "doi", "resource_type": "publication-preprint"},
+    {"relation": "isSupplementTo", "identifier": "10.5281/zenodo.19080708", "scheme": "doi", "resource_type": "publication-preprint"},
+    {"relation": "isRelatedTo",    "identifier": "10.5281/zenodo.19056262", "scheme": "doi", "resource_type": "publication-preprint"},
+    {"relation": "isRelatedTo",    "identifier": "10.5281/zenodo.19056326", "scheme": "doi", "resource_type": "publication-preprint"},
+    {"relation": "isSupplementedBy","identifier": "https://github.com/Steake/EQBSL", "scheme": "url"}
+  ]
+}
