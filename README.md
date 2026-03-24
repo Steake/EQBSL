@@ -3,6 +3,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Angular](https://img.shields.io/badge/Angular-21.0-DD0031?logo=angular)](https://angular.io)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript)](https://www.typescriptlang.org/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19056322.svg)](https://doi.org/10.5281/zenodo.19056322)
 
 ## Documentation
 
@@ -108,13 +109,18 @@ Traditional reputation systems collapse complex trust relationships into a singl
 
 ## 🔬 Research Papers
 
-This implementation is grounded in rigorous academic research. The `Papers/` directory contains:
+This explorer implements and visualises a family of open-access papers by Oliver C. Hirst. Cite via the DOI badges below:
 
-- **EBSL in ZK Reputation Systems** – Foundations of zero-knowledge trust proofs
-- **EQBSL+ZK** – Quantum-resistant extensions to EBSL
-- **Proof-Carrying-Trust** – Verifiable trust computations
+| Paper | DOI |
+|-------|-----|
+| **EQBSL: Against Trust Scores** — replaces scalar trust with evidence tensors (positive, negative, uncertainty, quality) grounded in subjective logic | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19056322.svg)](https://doi.org/10.5281/zenodo.19056322) |
+| **CATHEXIS: A Trust-Handle Layer for EQBSL Networks** — LLM-powered semantic trust labels over dense EQBSL embeddings | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19083966.svg)](https://doi.org/10.5281/zenodo.19083966) |
+| **Shadowgraph: Hyperdimensional Social Graph** — HD vector trust storage enabling ZK attestation and temporal identity prediction | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19056324.svg)](https://doi.org/10.5281/zenodo.19056324) |
+| **Plenum: Collective Cognitive Field Architecture** — coordination layer for multi-agent EQBSL-anchored collectives | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19080708.svg)](https://doi.org/10.5281/zenodo.19080708) |
+| **EBSL in ZK Reputation Systems** — zero-knowledge trust proofs over EBSL opinions | see `Papers/` directory |
+| **Proof-Carrying Trust** — every trust claim ships with a verifiable validity certificate | see `Papers/` directory |
 
-For formal definitions, proofs, and protocol specifications, explore these papers and the broader [`EQBSL`](https://github.com/Steake/EQBSL) repository.
+All Zenodo records are open access. The `Papers/` directory in this repo also contains the source PDFs.
 
 ---
 
